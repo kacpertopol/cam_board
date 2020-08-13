@@ -4,7 +4,7 @@
 
 Generate markdown from source code files. 
 In conjunction with *pandoc* this is 
-useful tool to create lecture notes
+a useful tool to create lecture notes
 and presentations.
 
 Examples of annotation are available in:
