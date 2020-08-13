@@ -1,0 +1,175 @@
+#!/usr/bin/env python
+
+import os
+import argparse
+
+def get_label(ln , line , comment_string , command , in_file , getLabel = True):
+    """
+        ln - line number
+        line - string with line
+        comment_string - string with commnet
+        command - string with command
+    """
+    ok = None
+    strip = line.strip()
+    if(command != ""):
+        if(len(strip) >= (len(comment_string) + len(command))):
+            if(strip[0:(len(comment_string) + len(command))] == "#@" + command):
+                split = strip.split()
+                if(getLabel):
+                    if(len(split) == 2):
+                        ok = split[1]
+                    else:
+                        error_string = "Wrong syntax in line " + str(ln) + \
+                                    " of " + in_file + ". Expecting " + \
+                                    comment_string + command + " <label>." 
+                        raise ValueError(error_string)
+                else:
+                    ok = ""
+    else:
+        split = strip.split()
+        if(len(split) >= 1):
+            if(split[0] == comment_string):
+                ok = strip[2:].strip()
+    return ok
+
+
+
+if(__name__ == "__main__"):
+    parser = argparse.ArgumentParser(description = "Turn source code into a markdown file."
+            " See wait_print_example for example usage in a python programm.")
+
+    parser.add_argument("--mkfile" , "-m" , help = "Additional mk file.")
+    parser.add_argument("--nopause" , "-n" , action="store_true" , help = "If this flag is set then there will be no pauses inserted.")
+    parser.add_argument('--input' , '-i' , help = "Input file path to file with code." , required = True , nargs = "+")
+    parser.add_argument('--output' , '-o' , help = "Output path to file with markdown." , required = True)
+
+    args = parser.parse_args()
+
+    comment_string = "#@"
+    dot_dot_dot = "#..."
+    code_begin = '```python'
+    code_end = '```'
+
+    # Get labeled portions of code:
+    
+    labels = {}
+    labelLines = {}
+
+    for in_file in args.input:
+        
+        extension = os.path.splitext(in_file)[1]
+
+        if(extension == ".py"):
+            comment_string = "#@"
+            dot_dot_dot = "#..."
+            code_begin = '```python'
+            code_end = '```'
+        elif(extension == ".f90"):
+            comment_string = "!@"
+            dot_dot_dot = "!..."
+            code_begin = '```fortran'
+            code_end = '```'
+
+        ln = 0
+        with open(in_file , 'r') as input_file:
+            for line in input_file.readlines():
+                ln = ln + 1
+                lb = get_label(ln , line , comment_string , "begin" , in_file) 
+                if(lb != None):
+                    labels.update({lb : ""})
+                    labelLines.update({lb : []})
+
+        for lb in labels:
+            ln = 0
+            in_label = False
+            n_begin = 0
+            n_code_fragment = 0
+            with open(in_file , 'r') as input_file:
+                for line in input_file.readlines():
+                    ln = ln + 1
+                    is_end = get_label(ln , line , comment_string , "end" , in_file) 
+                    if(is_end != None):
+                        if(is_end == lb):
+                            in_label = False
+                            n_begin = n_begin - 1
+                    if(in_label):
+                        labels.update({lb : labels[lb] + line})
+                    is_begin = get_label(ln , line , comment_string , "begin" , in_file) 
+                    if(is_begin != None):
+                        if(is_begin == lb):
+                            if(n_begin == 0):
+                                in_label = True
+                                if(n_code_fragment > 0):
+                                    labels.update({lb : labels[lb] + dot_dot_dot + "\n"})
+                                labelLines.update({lb : labelLines[lb] + [os.path.basename(in_file) + \
+                                        " @ " + str(ln + 1)]})
+                                n_begin = n_begin + 1
+                                n_code_fragment = n_code_fragment + 1
+                            else:
+                                raise ValueError("Error in file " + in_file + " in line " + str(ln) + "." + \
+                                        " Unmatched " + comment_string + "beign " + \
+                                        lb + " and " + comment_string + "end " + lb + ".")
+                if(in_label == True):
+                    raise ValueError("Error in file " + in_file + ". " + comment_string + "beign " + \
+                            lb + " has no matching " + comment_string + "end " + lb + ".")
+
+    # Build text:
+
+    text = ""
+   
+    if(args.mkfile != None):
+        with open(args.mkfile , 'r') as mf:
+            text = mf.read() + "\n"
+
+    for in_file in args.input:
+
+        extension = os.path.splitext(in_file)[1]
+
+        if(extension == ".py"):
+            comment_string = "#@"
+            dot_dot_dot = "#..."
+            code_begin = '```python'
+            code_end = '```'
+        elif(extension == ".f90"):
+            comment_string = "!@"
+            dot_dot_dot = "!..."
+            code_begin = '```fortran'
+            code_end = '```'
+
+
+        ln = 0
+        with open(in_file , 'r') as input_file:
+            for line in input_file.readlines():
+                ln = ln + 1
+                is_insert = get_label(ln , line , comment_string , "insert" , in_file)
+                if(is_insert != None):
+                    text = text + "\n" + code_begin + "\n"
+                    text = text + labels[is_insert]
+                    text = text + code_end + "\n\n"
+                else:
+                    is_ref = get_label(ln , line , comment_string , "ref" , in_file)
+                    if(is_ref != None):
+                        text = text + '\[' 
+                        n = 0
+                        for num in labelLines[is_ref]:
+                            n = n + 1
+                            text = text + str(num)
+                            if(n != len(labelLines[is_ref])):
+                                text = text + " , "
+                        text = text + '\] \n'
+
+                    else:
+                        is_pause = get_label(ln , line , comment_string , "pause" , in_file , getLabel = False)
+                        if(is_pause != None):
+                            if(args.nopause == False):
+                                text = text + ". . . \n"
+                        else:
+                            is_md = get_label(ln , line , comment_string , "" , in_file)
+                            if(is_md != None):
+                                text = text + is_md + "\n"
+
+    # Write file:
+    
+    with open(args.output , 'w') as of:
+        of.write(text)
