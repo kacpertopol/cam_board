@@ -26,7 +26,7 @@ import time
 
 
 Code fragments can be split into multiple parts
-\[example.py @ 28 , example.py @ 60\] 
+\[example.py @ 28 , example.py @ 56\] 
 :
 
 ```python
@@ -37,16 +37,12 @@ time.sleep(int(sys.argv[1]))
 ```
 
 # NEW SECTION
-## Subsection
-- Item 1
-- Item 2
-- Item 3
 
-Wait for it...
+Pause next
 
 . . .
 
-This text only appears on the next slide (\ref{aaa}).
+Latex reference (\ref{aaa}).
 This is some math $\frac{1}{2}$
 \begin{equation}
 \frac{1}{\frac{1}{2}}
@@ -58,7 +54,7 @@ Second section
 
 This is the second section.
 And this is the second part of the second sectinon.
-\[example.py @ 77\] 
+\[example.py @ 73\] 
 
 ```python
 if(__name__ == "__main__"):

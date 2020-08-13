@@ -39,17 +39,13 @@ b = 2
 #@insert important_things  
 
 #@ # NEW SECTION
+#@
 
-#@ ## Subsection
-#@ - Item 1
-#@ - Item 2
-#@ - Item 3
-#@ 
-#@ Wait for it...
+#@ Pause next
 #@ 
 #@ . . .
 #@ 
-#@ This text only appears on the next slide (\ref{aaa}).
+#@ Latex reference (\ref{aaa}).
 #@ This is some math $\frac{1}{2}$ 
 #@ \begin{equation}
 #@ \frac{1}{\frac{1}{2}} 
