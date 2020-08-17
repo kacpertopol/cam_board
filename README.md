@@ -27,5 +27,5 @@ $ ./mkFromCode --help
 
 ### TODO
 
-- clean up code, esp loops
+- clean up code, esp loops and nested if elseif ...
 - pack reusable code to functions
