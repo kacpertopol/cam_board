@@ -25,4 +25,7 @@ For more information run:
 $ ./mkFromCode --help
 ```
 
+### TODO
 
+- clean up code, esp loops
+- pack reusable code to functions
