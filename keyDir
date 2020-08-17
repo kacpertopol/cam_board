@@ -1,0 +1,185 @@
+#!/usr/bin/env python
+
+import os
+import argparse
+import re
+import configparser
+import sys
+
+# GLOBAL VARIABLES
+
+class keyDirGlobal:
+    script_dir = None # Path to directory with this script
+    keys = {} # {<key> : <short description> ...}
+    root_dir = None # Root directory for searching for .kdKeys files
+    dirs = [] # List of directories with keys
+
+if(__name__ == "__main__"):
+    parser = argparse.ArgumentParser(description = "Simple file manager.")
+
+    parser.add_argument("--new" , "-n" , nargs = "+" , help = "Set keywords for current directories .kdKeys.")
+    
+    parser.add_argument("--scan" , "-s" , action="store_true" , help = "Scan system for .kdKeys files.")
+    
+    parser.add_argument("--tag" , "-t" , nargs = "+" , help = "Tag current directory, with two argument the second one is the tag description.")
+    
+    parser.add_argument("--list" , "-l" , action = "store_true" , help = "List all tags.")
+    
+    parser.add_argument("--clear" , "-c" , action = "store_true" , help = "Clear all tags.")
+    
+    parser.add_argument("--goto" , "-g" , nargs = 1 , help = "Will print the tag working dir to stdout.")
+    
+    parser.add_argument("--filter" , "-f" , help = "TODO Will accept an expression to filter keys in dirs and run fzf.")
+    
+    parser.add_argument("--bashrc" , "-b" , action = "store_true" , help = "Additional functions for .bashrc.")
+
+    args = parser.parse_args()
+
+    # SET PATH TO SCRIPT DIRECTORY
+
+    keyDirGlobal.script_dir = os.path.dirname(os.path.realpath(__file__))
+
+    # CREATE MISSING FILES
+
+    ## kdKeys
+
+    if(not os.path.exists(os.path.join(keyDirGlobal.script_dir , "kdKeys"))):
+        with open(os.path.join(keyDirGlobal.script_dir , "kdKeys") , 'w') as f:
+            f.write("")
+    else:
+        with open(os.path.join(keyDirGlobal.script_dir , 'kdKeys') , 'r') as f:
+            for l in f.readlines():
+                k , des = l.split('|')
+                k , des = k.strip() , des.strip()
+                keyDirGlobal.keys.update({k : des})
+
+    ## kdDirs
+
+    if(not os.path.exists(os.path.join(keyDirGlobal.script_dir , "kdDirs"))):
+        with open(os.path.join(keyDirGlobal.script_dir , "kdDirs") , 'w') as f:
+            f.write("")
+    else:
+        with open(os.path.join(keyDirGlobal.script_dir , 'kdDirs') , 'r') as f:
+            for l in f.readlines():
+                d , ks = l.split('|')
+                d , ks = d.strip() , ks.strip().split()
+                keyDirGlobal.dirs.append((d , ks))
+
+    # READ CONFIGURATION FILE
+
+    config = configparser.ConfigParser()
+    config.read(os.path.join(keyDirGlobal.script_dir , "keyDir.config"))
+    keyDirGlobal.root_dir = config["PATHS"]["root"]
+
+    # NEW
+
+    if(args.new != None):
+        ok = True
+        newkeys = {}
+        dirkeys = []
+        for k in args.new:
+            if(re.match(r"^[a-z]+$" , k)):
+                dirkeys.append(k)
+                if(not k in keyDirGlobal.keys):
+                    app = input("Key " + k + " not in kdKeys. Append? [N/y] ")
+                    ok = ok and (app.lower().strip() == 'y')
+                    if(not ok):
+                        raise ValueError("Could not append all keys to kdKeys.")
+                    des = input("Add short description (max 50 characters the | symbol is reserved): ")
+                    ok = ok and (not '|' in des)
+                    ok = ok and (len(des) <= 50)
+                    if(not ok):
+                        raise ValueError("Key description has improper fomat.")
+                    newkeys.update({k : des})
+            else:
+                raise ValueError("Expecting a single all lowercase word as key for directory.")
+        if(ok):
+            keyDirGlobal.keys.update(newkeys)
+            with open(os.path.join(keyDirGlobal.script_dir , 'kdKeys') , 'w') as f:
+                for k in keyDirGlobal.keys:
+                    f.write(k + " | " + keyDirGlobal.keys[k] + "\n")
+            with open(os.path.join(keyDirGlobal.script_dir , '.kdKeys') , 'w') as f:
+                for k in dirkeys:
+                    f.write(k + "\n")
+
+    # SCAN
+
+    if(args.scan):
+        keyDirGlobal.dirs = []
+        for root , dirs , files in os.walk(keyDirGlobal.root_dir):
+            if(".kdKeys" in files):
+                myKeys = []
+                with open(os.path.join(root , ".kdKeys") , "r") as f:
+                    for l in f.readlines():
+                        myKeys.append(l.strip())
+                keyDirGlobal.dirs.append((root , myKeys))
+
+        with open(os.path.join(keyDirGlobal.script_dir , "kdDirs") , "w") as f:
+            for d in keyDirGlobal.dirs:
+                f.write(d[0] + " | ")
+                for k in d[1]:
+                    f.write(k + " ")
+                f.write("\n")
+
+    # TAG
+
+    if(args.tag != None):
+        if(re.match(r"^[a-z]+$" , args.tag[0]) and len(args.tag) <= 2):
+            with open(os.path.join(keyDirGlobal.script_dir , "kdTag_" + args.tag[0]) , "w") as f:
+                f.write(os.getcwd())
+            tag_description = "---"
+            if(len(args.tag) == 2 and len(args.tag[1]) <= 50):
+                tag_description = args.tag[1].strip()
+            with open(os.path.join(keyDirGlobal.script_dir , "kdTagDes_" + args.tag[0]) , "w") as f:
+                f.write(tag_description)
+        else:
+            raise ValueError("Tag name is invalid or number of arguments for tag exceeds 2.")
+               
+    # LIST
+
+    if(args.list):
+        tag_files = [f for f in os.listdir(os.path.join(keyDirGlobal.script_dir)) if re.match(r"^kdTag_[a-z]+$" , f)]
+        for t in tag_files:
+            tag = t[6:]
+            tag_dir = None
+            tag_des = None
+            with open(os.path.join(os.path.join(keyDirGlobal.script_dir) , t) , "r") as f:
+                tag_dir = f.read().strip()
+            with open(os.path.join(os.path.join(keyDirGlobal.script_dir) , "kdTagDes_" + tag) , "r") as f:
+                tag_des = f.read().strip()
+            print(tag , "|" , tag_des)
+
+    # CLEAR
+
+    if(args.clear):
+        tag_files = [f for f in os.listdir(os.path.join(keyDirGlobal.script_dir)) if re.match(r"^kdTag_[a-z]+$" , f)]
+            
+        print("Will remove:")
+        
+        for t in tag_files:
+            tag = t[6:]
+            print(os.path.join(os.path.join(keyDirGlobal.script_dir) , t))
+            print(os.path.join(os.path.join(keyDirGlobal.script_dir) , "kdTagDes_" + tag))
+
+        con = input("Continue? [n/Y] ")
+
+        if(con.lower() == "y"):
+            for t in tag_files:
+                tag = t[6:]
+                os.remove(os.path.join(os.path.join(keyDirGlobal.script_dir) , t))
+                os.remove(os.path.join(os.path.join(keyDirGlobal.script_dir) , "kdTagDes_" + tag))
+
+    # GOTO
+
+    if(args.goto != None):
+        if(os.path.exists(os.path.join(keyDirGlobal.script_dir , "kdTag_" + args.goto[0]))):
+            with open(os.path.join(keyDirGlobal.script_dir , "kdTag_" + args.goto[0]) , 'r') as f:
+                sys.stdout.write(f.read().strip())
+        else:
+            raise ValueError("Tag is not inside " + keyDirGlobal.script_dir)
+
+    # BASHRC
+
+    if(args.bashrc):
+        print("function kdgo { cd $(" + os.path.join(keyDirGlobal.script_dir , "keyDir")  + " --goto $1); }")
+

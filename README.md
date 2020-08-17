@@ -29,3 +29,33 @@ $ ./mkFromCode --help
 
 - clean up code, esp loops and nested if elseif ...
 - pack reusable code to functions
+
+## keyDir
+
+Simple file manager. Directories can be tagged
+and have keywords associated with them via a 
+hidden .hdKeys file. 
+Methods for filtering these directories using
+logical | and & operators will be added (TODO).
+Directory choice will be via fzf (TODO).
+
+Additional functions can be added to a .bashrc
+file from the output of:
+
+```bash
+$ ./keyDir --bashrc
+```
+For more information run:
+
+```bash
+$ ./keyDir --help
+```
+
+### TODO
+
+- clean up code
+- pack reusable code to functions
+- implement filtering using expression built from | and &
+- implement directory choice via fzf
+
+
