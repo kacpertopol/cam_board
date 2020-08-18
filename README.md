@@ -55,7 +55,6 @@ $ ./keyDir --help
 
 - clean up code
 - pack reusable code to functions
-- implement filtering using expression built from | and &
-- implement directory choice via fzf
+- implement directory choice via fzf (letting go of this one)
 
 

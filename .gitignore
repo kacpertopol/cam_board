@@ -127,3 +127,9 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+
+# Specific to project
+kdDirs
+kdKeys
+kdSelection
+.kdKeys

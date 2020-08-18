@@ -12,7 +12,60 @@ class keyDirGlobal:
     script_dir = None # Path to directory with this script
     keys = {} # {<key> : <short description> ...}
     root_dir = None # Root directory for searching for .kdKeys files
-    dirs = [] # List of directories with keys
+    dirs = [] # [(<directory> , [<keyword> ...]) ...]List of directories with keys
+    keyRegex = r"^[a-z]+$"
+    tagRegex = r"^kdTag_[a-z]+$"
+    maxPrint = 10
+
+# FUNCTIONS TO PARSE RPN EXPRESSION
+
+def plusFun(funs):
+    def newfun(keys):
+        score = 0
+        for f in funs:
+            score = score + f(keys)
+        return score
+    return newfun
+
+def timesFun(funs):
+    def newfun(keys):
+        score = 1
+        for f in funs:
+            score = score * f(keys)
+        return score
+    return newfun
+
+def isIn(key):
+    if(not key in keyDirGlobal.keys):
+        raise ValueError("Key " + key + " not recognized.")
+    def newfun(keys):
+        score = 0
+        for k in keys:
+            if(k == key):
+                score = score + 1
+        return score
+    return newfun
+
+def parseRPN(expr):
+    words = expr.split()
+    ok = True
+    for w in words:
+        ok = ok and (re.match(keyDirGlobal.keyRegex , w) or re.match(r"^[*+]$" , w))
+    if(not ok):
+        raise ValueError("RPN expression has wrong format.")
+    fun_stack = []
+    for w in words:
+        if(w == "+"):
+            nf = plusFun(fun_stack)
+            fun_stack = [nf]
+        elif(w == "*"):
+            nf = timesFun(fun_stack)
+            fun_stack = [nf]
+        else:
+            fun_stack.append(isIn(w))
+    if(len(fun_stack) != 1):
+        raise ValueError("RPN expression schould leave stack with one element.")
+    return fun_stack[0]
 
 if(__name__ == "__main__"):
     parser = argparse.ArgumentParser(description = "Simple file manager.")
@@ -32,6 +85,12 @@ if(__name__ == "__main__"):
     parser.add_argument("--filter" , "-f" , help = "TODO Will accept an expression to filter keys in dirs and run fzf.")
     
     parser.add_argument("--bashrc" , "-b" , action = "store_true" , help = "Additional functions for .bashrc.")
+    
+    parser.add_argument("--info" , "-i" , help = "Print info on keyword.")
+    
+    parser.add_argument("--prt" , "-p" , action = "store_true" , help = "Print all keywords.")
+    
+    parser.add_argument("--add" , "-a" , nargs = 2 , help = "Add key and key description.")
 
     args = parser.parse_args()
 
@@ -63,6 +122,7 @@ if(__name__ == "__main__"):
             for l in f.readlines():
                 d , ks = l.split('|')
                 d , ks = d.strip() , ks.strip().split()
+
                 keyDirGlobal.dirs.append((d , ks))
 
     # READ CONFIGURATION FILE
@@ -78,7 +138,7 @@ if(__name__ == "__main__"):
         newkeys = {}
         dirkeys = []
         for k in args.new:
-            if(re.match(r"^[a-z]+$" , k)):
+            if(re.match(keyDirGlobal.keyRegex , k)):
                 dirkeys.append(k)
                 if(not k in keyDirGlobal.keys):
                     app = input("Key " + k + " not in kdKeys. Append? [N/y] ")
@@ -98,7 +158,7 @@ if(__name__ == "__main__"):
             with open(os.path.join(keyDirGlobal.script_dir , 'kdKeys') , 'w') as f:
                 for k in keyDirGlobal.keys:
                     f.write(k + " | " + keyDirGlobal.keys[k] + "\n")
-            with open(os.path.join(keyDirGlobal.script_dir , '.kdKeys') , 'w') as f:
+            with open(os.path.join(os.getcwd() , '.kdKeys') , 'w') as f:
                 for k in dirkeys:
                     f.write(k + "\n")
 
@@ -124,7 +184,7 @@ if(__name__ == "__main__"):
     # TAG
 
     if(args.tag != None):
-        if(re.match(r"^[a-z]+$" , args.tag[0]) and len(args.tag) <= 2):
+        if(re.match(keyDirGlobal.keyRegex , args.tag[0]) and len(args.tag) <= 2):
             with open(os.path.join(keyDirGlobal.script_dir , "kdTag_" + args.tag[0]) , "w") as f:
                 f.write(os.getcwd())
             tag_description = "---"
@@ -138,7 +198,7 @@ if(__name__ == "__main__"):
     # LIST
 
     if(args.list):
-        tag_files = [f for f in os.listdir(os.path.join(keyDirGlobal.script_dir)) if re.match(r"^kdTag_[a-z]+$" , f)]
+        tag_files = [f for f in os.listdir(os.path.join(keyDirGlobal.script_dir)) if re.match(keyDirGlobal.tagRegex , f)]
         for t in tag_files:
             tag = t[6:]
             tag_dir = None
@@ -152,7 +212,7 @@ if(__name__ == "__main__"):
     # CLEAR
 
     if(args.clear):
-        tag_files = [f for f in os.listdir(os.path.join(keyDirGlobal.script_dir)) if re.match(r"^kdTag_[a-z]+$" , f)]
+        tag_files = [f for f in os.listdir(os.path.join(keyDirGlobal.script_dir)) if re.match(keyDirGlobal.tagRegex , f)]
             
         print("Will remove:")
         
@@ -175,11 +235,58 @@ if(__name__ == "__main__"):
         if(os.path.exists(os.path.join(keyDirGlobal.script_dir , "kdTag_" + args.goto[0]))):
             with open(os.path.join(keyDirGlobal.script_dir , "kdTag_" + args.goto[0]) , 'r') as f:
                 sys.stdout.write(f.read().strip())
+                #with open(os.path.join(keyDirGlobal.script_dir , "kdSelection") , "w") as f:
+                #    f.write(f.read().strip())
         else:
             raise ValueError("Tag is not inside " + keyDirGlobal.script_dir)
 
     # BASHRC
 
     if(args.bashrc):
-        print("function kdgo { cd $(" + os.path.join(keyDirGlobal.script_dir , "keyDir")  + " --goto $1); }")
+        print("function kdgo { cd $( " + os.path.join(keyDirGlobal.script_dir , "keyDir")  + " --goto $1 ) ; }")
+        print("function kdfl { " + os.path.join(keyDirGlobal.script_dir , "keyDir")  + " --filter $1 ; " \
+                + "cd $( cat " + os.path.join(keyDirGlobal.script_dir , "kdSelection") + " ) ; }")
+
+    # FILTER
+
+    if(args.filter != None):
+        results = []
+        fun = parseRPN(args.filter)
+        for d in keyDirGlobal.dirs:
+            s = fun(d[1])
+            results.append((s , d[0] , d[1]))
+        results.sort(key = lambda x : x[0])
+        sel = results[-keyDirGlobal.maxPrint:]
+        ii = len(sel)
+        print("#  | " , "<score> <dir name> <key words>")
+        print("-----------------------------------------")
+        for d in sel:
+            print(ii , " | " , d[0] , os.path.basename(d[1]) , d[2])
+            ii -= 1
+        ch = input("Which directory? [number of q to quit] ")
+        if(ch.strip().lower() != "q"):
+            num = len(sel) - int(ch)
+            with open(os.path.join(keyDirGlobal.script_dir , "kdSelection") , "w") as f:
+                f.write(sel[num][1])
+
+    # INFO
+
+    if(args.info != None):
+        if(re.match(keyDirGlobal.keyRegex , args.info)):
+            if(args.info in keyDirGlobal.keys):
+                print(keyDirGlobal.keys[args.info])
+
+    # PRINT
+
+    if(args.prt):
+        with open(os.path.join(keyDirGlobal.script_dir , "kdKeys") , "r") as f:
+            for l in f.readlines():
+                sys.stdout.write(l)
+
+    # ADD
+
+    if(args.add != None):
+        if(re.match(keyDirGlobal.keyRegex , args.add[0]) and (not args.add[0] in keyDirGlobal.keys) and len(args.add[1]) < 50):
+            with open(os.path.join(keyDirGlobal.script_dir , 'kdKeys') , 'a') as f:
+                f.write(args.add[0] + " | " + args.add[1] + "\n")
 
