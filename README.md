@@ -25,6 +25,10 @@ For more information run:
 $ ./mkFromCode --help
 ```
 
+### STATUS
+
+- very poorly tested
+
 ### TODO
 
 - clean up code, esp loops and nested if elseif ...
@@ -50,6 +54,10 @@ For more information run:
 ```bash
 $ ./keyDir --help
 ```
+
+### STATUS
+
+- very poorly tested
 
 ### TODO
 
