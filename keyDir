@@ -243,8 +243,8 @@ if(__name__ == "__main__"):
     # BASHRC
 
     if(args.bashrc):
-        print("function kdgo { cd $( " + os.path.join(keyDirGlobal.script_dir , "keyDir")  + " --goto $1 ) ; }")
-        print("function kdfl { " + os.path.join(keyDirGlobal.script_dir , "keyDir")  + " --filter $1 ; " \
+        print("function kdgo { cd $( " + os.path.join(keyDirGlobal.script_dir , "keyDir")  + " --goto \"$1\" ) ; }")
+        print("function kdfl { " + os.path.join(keyDirGlobal.script_dir , "keyDir")  + " --filter \"$1\" ; " \
                 + "cd $( cat " + os.path.join(keyDirGlobal.script_dir , "kdSelection") + " ) ; }")
 
     # FILTER
