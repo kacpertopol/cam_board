@@ -13,8 +13,8 @@ class keyDirGlobal:
     keys = {} # {<key> : <short description> ...}
     root_dir = None # Root directory for searching for .kdKeys files
     dirs = [] # [(<directory> , [<keyword> ...]) ...]List of directories with keys
-    keyRegex = r"^[a-z]+$"
-    tagRegex = r"^kdTag_[a-z]+$"
+    keyRegex = r"^[a-z0-9]+$"
+    tagRegex = r"^kdTag_[a-z0-9]+$"
     maxPrint = 10
 
 # FUNCTIONS TO PARSE RPN EXPRESSION

@@ -65,4 +65,36 @@ $ ./keyDir --help
 - pack reusable code to functions
 - implement directory choice via fzf (letting go of this one)
 
+## xoj_present
+
+Turn files created using xournal or xournalpp into beamer style presentations.
+
+Example of turning notes into a presentation:
+
+```bash
+$ ./xoj_present notes.xopp presentation_from_notes.xopp simpleparse
+```
+
+Example of turning notes into a fancy presentation with sections and subsections (more documentation is needed):
+
+```bash
+$ ./xoj_present notes.xopp fancy_presentation_from_notes.xopp parse
+```
+
+More information (needs more documentation):
+
+```bash
+$ ./xoj_present --help
+```
+
+### STATUS
+
+- using an xml parser in python scrambles the order of key value pairs in <... key = value ...>
+  this causes xounnal (not sure if xournalpp) to crash, the xml files are reshuffled line by line.
+
+### TODO
+
+- add more documentation to --help 
+- clean up code
+
 
