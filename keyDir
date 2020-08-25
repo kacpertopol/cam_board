@@ -35,6 +35,12 @@ def timesFun(funs):
         return score
     return newfun
 
+def notFun(fun):
+    def newfun(keys):
+        score = -1 * fun(keys)
+        return score
+    return newfun
+
 def isIn(key):
     if(not key in keyDirGlobal.keys):
         raise ValueError("Key " + key + " not recognized.")
@@ -50,7 +56,7 @@ def parseRPN(expr):
     words = expr.split()
     ok = True
     for w in words:
-        ok = ok and (re.match(keyDirGlobal.keyRegex , w) or re.match(r"^[*+]$" , w))
+        ok = ok and (re.match(keyDirGlobal.keyRegex , w) or re.match(r"^[*+!]$" , w))
     if(not ok):
         raise ValueError("RPN expression has wrong format.")
     fun_stack = []
@@ -60,6 +66,11 @@ def parseRPN(expr):
             fun_stack = [nf]
         elif(w == "*"):
             nf = timesFun(fun_stack)
+            fun_stack = [nf]
+        elif(w == "!"):
+            if(len(fun_stack) != 1):
+                raise ValueError("The ! operator in RPN expression expects 1 function on stack.")
+            nf = notFun(fun_stack[0])
             fun_stack = [nf]
         else:
             fun_stack.append(isIn(w))
@@ -82,7 +93,7 @@ if(__name__ == "__main__"):
     
     parser.add_argument("--goto" , "-g" , nargs = 1 , help = "Will print the tag working dir to stdout.")
     
-    parser.add_argument("--filter" , "-f" , help = "TODO Will accept an expression to filter keys in dirs and run fzf.")
+    parser.add_argument("--filter" , "-f" , help = "Will accept an expression to filter keys in dirs.")
     
     parser.add_argument("--bashrc" , "-b" , action = "store_true" , help = "Additional functions for .bashrc.")
     
