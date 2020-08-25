@@ -34,14 +34,14 @@ def get_choice(lst , toStr):
         tty.setraw(fd)
         char = sys.stdin.read(1)
         termios.tcsetattr(fd , termios.TCSADRAIN , old)
-        if(char == "w"):
+        if(char == "k"):
             ch -= 1
-        elif(char == "s"):
+        elif(char == "j"):
             ch += 1
-        elif(char == "a"):
+        elif(char == "h"):
             ok = False
             fin = True
-        elif(char == "d"):
+        elif(char == "l"):
             fin = True 
         ch = ch % len(lst)
         for n in range(len(lst)):
@@ -164,7 +164,7 @@ if(__name__ == "__main__"):
     
     parser.add_argument("--scan" , "-s" , action="store_true" , help = "Scan system for .kdKeys files.")
     
-    parser.add_argument("--tag" , "-t" , nargs = "+" , help = "Tag current directory, with two argument the second one is the tag description.")
+    parser.add_argument("--tag" , "-t" , help = "Tag current directory, with two argument the second one is the tag description.")
     
     parser.add_argument("--list" , "-l" , action = "store_true" , help = "List all tags.")
     
@@ -276,21 +276,21 @@ if(__name__ == "__main__"):
     # TAG
 
     if(args.tag != None):
-        if(re.match(keyDirGlobal.keyRegex , args.tag[0]) and len(args.tag) <= 2):
-            with open(os.path.join(keyDirGlobal.script_dir , "kdTag_" + args.tag[0]) , "w") as f:
+        if(re.match(keyDirGlobal.keyRegex , args.tag)):
+            with open(os.path.join(keyDirGlobal.script_dir , "kdTag_" + args.tag) , "w") as f:
                 f.write(os.getcwd())
-            tag_description = "---"
-            if(len(args.tag) == 2 and len(args.tag[1]) <= 50):
-                tag_description = args.tag[1].strip()
-            with open(os.path.join(keyDirGlobal.script_dir , "kdTagDes_" + args.tag[0]) , "w") as f:
-                f.write(tag_description)
+            #tag_description = "---"
+            #if(len(args.tag) == 2 and len(args.tag[1]) <= 50):
+            #    tag_description = args.tag[1].strip()
+            #with open(os.path.join(keyDirGlobal.script_dir , "kdTagDes_" + args.tag[0]) , "w") as f:
+            #    f.write(tag_description)
         else:
             raise ValueError("Tag name is invalid or number of arguments for tag exceeds 2.")
                
     # LIST
 
     if(args.list):
-        print("\033[31;1mtag  | " , "<description or --->\033[0m")
+        print("\033[31;1mtag" , "\033[0m")
         tag_files = [f for f in os.listdir(os.path.join(keyDirGlobal.script_dir)) if re.match(keyDirGlobal.tagRegex , f)]
         for t in tag_files:
             tag = t[6:]
@@ -298,9 +298,10 @@ if(__name__ == "__main__"):
             tag_des = None
             with open(os.path.join(os.path.join(keyDirGlobal.script_dir) , t) , "r") as f:
                 tag_dir = f.read().strip()
-            with open(os.path.join(os.path.join(keyDirGlobal.script_dir) , "kdTagDes_" + tag) , "r") as f:
-                tag_des = f.read().strip()
-            print(tag , "|" , tag_des)
+            #with open(os.path.join(os.path.join(keyDirGlobal.script_dir) , "kdTagDes_" + tag) , "r") as f:
+            #    tag_des = f.read().strip()
+            #print(tag , "|" , tag_des)
+            print(tag)
 
     # CLEAR
 
@@ -312,7 +313,7 @@ if(__name__ == "__main__"):
         for t in tag_files:
             tag = t[6:]
             print(os.path.join(os.path.join(keyDirGlobal.script_dir) , t))
-            print(os.path.join(os.path.join(keyDirGlobal.script_dir) , "kdTagDes_" + tag))
+            #print(os.path.join(os.path.join(keyDirGlobal.script_dir) , "kdTagDes_" + tag))
 
         con = input("Continue? [n/Y] ")
 
@@ -320,7 +321,7 @@ if(__name__ == "__main__"):
             for t in tag_files:
                 tag = t[6:]
                 os.remove(os.path.join(os.path.join(keyDirGlobal.script_dir) , t))
-                os.remove(os.path.join(os.path.join(keyDirGlobal.script_dir) , "kdTagDes_" + tag))
+                #os.remove(os.path.join(os.path.join(keyDirGlobal.script_dir) , "kdTagDes_" + tag))
 
     # GOTO
 
@@ -353,7 +354,7 @@ if(__name__ == "__main__"):
     # FILTER
 
     def toStrD(el):
-        return str(el[0]) + " " + os.path.basename(el[1]) + " " + str(el[2])
+        return str(el[0]) + " | " + os.path.basename(el[1]) + " " + str(el[2])
 
     if(args.filter != None):
         results = []
@@ -364,7 +365,7 @@ if(__name__ == "__main__"):
         results.sort(key = lambda x : -x[0])
         sel = results[-keyDirGlobal.maxPrint:]
         ii = len(sel)
-        print("\033[31;1m#  | " , "<score> <dir name> [<key words> ...]\033[0m")
+        print("\033[31;1m" , "<score> | <dir name> [<key words> ...]\033[0m")
         choice = get_choice(sel , toStrD)
         if(choice != None):
             with open(os.path.join(keyDirGlobal.script_dir , "kdSelection") , "w") as f:
