@@ -235,18 +235,27 @@ if(__name__ == "__main__"):
         if(os.path.exists(os.path.join(keyDirGlobal.script_dir , "kdTag_" + args.goto[0]))):
             with open(os.path.join(keyDirGlobal.script_dir , "kdTag_" + args.goto[0]) , 'r') as f:
                 sys.stdout.write(f.read().strip())
-                #with open(os.path.join(keyDirGlobal.script_dir , "kdSelection") , "w") as f:
-                #    f.write(f.read().strip())
+            with open(os.path.join(keyDirGlobal.script_dir , "kdTag_" + args.goto[0]) , 'r') as f:
+                with open(os.path.join(keyDirGlobal.script_dir , "kdSelection") , "w") as f1:
+                    f1.write(f.read().strip())
         else:
             raise ValueError("Tag is not inside " + keyDirGlobal.script_dir)
 
     # BASHRC
 
     if(args.bashrc):
+        print("###################################################################################")	
+        print("# additional functions for keyDir (https://github.com/kacpertopol/useful_scripts) #")
+        print("###################################################################################")	
+        print("")
         print("function kdg { cd $( " + os.path.join(keyDirGlobal.script_dir , "keyDir")  + " --goto \"$1\" ) ; }")
+        print("")
         print("function kdf { " + os.path.join(keyDirGlobal.script_dir , "keyDir")  + " --filter \"$1\" ; " \
                 + "cd $( cat " + os.path.join(keyDirGlobal.script_dir , "kdSelection") + " ) ; }")
+        print("")
         print("alias kd='" + os.path.join(keyDirGlobal.script_dir , "keyDir")  + "'")
+        print("")
+        print("###################################################################################")	
 
     # FILTER
 
@@ -259,8 +268,7 @@ if(__name__ == "__main__"):
         results.sort(key = lambda x : x[0])
         sel = results[-keyDirGlobal.maxPrint:]
         ii = len(sel)
-        print("#  | " , "<score> <dir name> <key words>")
-        print("-----------------------------------------")
+        print("\033[31;1m#  | " , "<score> <dir name> <key words>\033[0m")
         for d in sel:
             print(ii , " | " , d[0] , os.path.basename(d[1]) , d[2])
             ii -= 1
@@ -269,6 +277,9 @@ if(__name__ == "__main__"):
             num = len(sel) - int(ch)
             with open(os.path.join(keyDirGlobal.script_dir , "kdSelection") , "w") as f:
                 f.write(sel[num][1])
+        else:
+            with open(os.path.join(keyDirGlobal.script_dir , "kdSelection") , "w") as f:
+                f.write(os.getcwd())
 
     # INFO
 
