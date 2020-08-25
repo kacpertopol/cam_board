@@ -289,19 +289,33 @@ if(__name__ == "__main__"):
                
     # LIST
 
+    def toStrT(tg):
+        return str(tg[0]) + " | " + str(tg[1])
+
     if(args.list):
         print("\033[31;1mtag" , "\033[0m")
+        all = []
         tag_files = [f for f in os.listdir(os.path.join(keyDirGlobal.script_dir)) if re.match(keyDirGlobal.tagRegex , f)]
         for t in tag_files:
             tag = t[6:]
             tag_dir = None
-            tag_des = None
+            #tag_des = None
             with open(os.path.join(os.path.join(keyDirGlobal.script_dir) , t) , "r") as f:
                 tag_dir = f.read().strip()
             #with open(os.path.join(os.path.join(keyDirGlobal.script_dir) , "kdTagDes_" + tag) , "r") as f:
             #    tag_des = f.read().strip()
             #print(tag , "|" , tag_des)
-            print(tag)
+            #print(tag)
+            all.append((tag , tag_dir))
+        ch = get_choice(all , toStrT)
+        sys.stdout.write(keyDirGlobal.CURSOR_UP_ONE)
+        sys.stdout.write(keyDirGlobal.ERASE_LINE)
+        if(ch != None):
+            with open(os.path.join(keyDirGlobal.script_dir , "kdSelection") , "w") as f1:
+                f1.write(ch[1].strip())
+        else:
+            with open(os.path.join(keyDirGlobal.script_dir , "kdSelection") , "w") as f:
+                f.write(os.getcwd())      
 
     # CLEAR
 
@@ -343,6 +357,9 @@ if(__name__ == "__main__"):
         print("###################################################################################")	
         print("")
         print("function kdg { cd $( " + os.path.join(keyDirGlobal.script_dir , "keyDir")  + " --goto \"$1\" ) ; }")
+        print("")
+        print("function kdt { " + os.path.join(keyDirGlobal.script_dir , "keyDir")  + " --list ; " + \
+                "cd $( cat " + os.path.join(keyDirGlobal.script_dir , "kdSelection") + " ) ; }")
         print("")
         print("function kdf { " + os.path.join(keyDirGlobal.script_dir , "keyDir")  + " --filter \"$1\" ; " \
                 + "cd $( cat " + os.path.join(keyDirGlobal.script_dir , "kdSelection") + " ) ; }")
