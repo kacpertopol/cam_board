@@ -239,6 +239,7 @@ if(__name__ == "__main__"):
     # LIST
 
     if(args.list):
+        print("\033[31;1mtag  | " , "<description or --->\033[0m")
         tag_files = [f for f in os.listdir(os.path.join(keyDirGlobal.script_dir)) if re.match(keyDirGlobal.tagRegex , f)]
         for t in tag_files:
             tag = t[6:]
@@ -332,6 +333,7 @@ if(__name__ == "__main__"):
     # PRINT
 
     if(args.prt):
+        print("\033[31;1m<key>  | " , "<description>\033[0m")
         with open(os.path.join(keyDirGlobal.script_dir , "kdKeys") , "r") as f:
             for l in f.readlines():
                 sys.stdout.write(l)
