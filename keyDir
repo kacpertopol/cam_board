@@ -268,7 +268,7 @@ if(__name__ == "__main__"):
         results.sort(key = lambda x : x[0])
         sel = results[-keyDirGlobal.maxPrint:]
         ii = len(sel)
-        print("\033[31;1m#  | " , "<score> <dir name> <key words>\033[0m")
+        print("\033[31;1m#  | " , "<score> <dir name> [<key words> ...]\033[0m")
         for d in sel:
             print(ii , " | " , d[0] , os.path.basename(d[1]) , d[2])
             ii -= 1
