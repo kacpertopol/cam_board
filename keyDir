@@ -16,6 +16,8 @@ def get_choice(lst , toStr):
     Return value:
         single element from lst
     """
+    if(len(lst) == 0):
+        return None
     ok = True
     fin = False
     ch = 0
