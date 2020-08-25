@@ -132,6 +132,8 @@ if(__name__ == "__main__"):
     parser.add_argument("--prt" , "-p" , action = "store_true" , help = "Print all keywords.")
     
     parser.add_argument("--add" , "-a" , nargs = 2 , help = "Add key and key description.")
+    
+    parser.add_argument("--dir" , "-d" , action = "store_true" , help = "Print selected directory to stdout.")
 
     args = parser.parse_args()
 
@@ -344,4 +346,9 @@ if(__name__ == "__main__"):
         if(re.match(keyDirGlobal.keyRegex , args.add[0]) and (not args.add[0] in keyDirGlobal.keys) and len(args.add[1]) < 50):
             with open(os.path.join(keyDirGlobal.script_dir , 'kdKeys') , 'a') as f:
                 f.write(args.add[0] + " | " + args.add[1] + "\n")
-
+    
+    # DIR
+   
+    if(args.dir):
+        with open(os.path.join(keyDirGlobal.script_dir , "kdSelection") , "r") as f:
+            sys.stdout.write(f.read())
