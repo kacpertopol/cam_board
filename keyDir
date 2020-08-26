@@ -296,7 +296,7 @@ if(__name__ == "__main__"):
     # LIST
 
     def toStrT(tg):
-        return str(tg[0]) + " | " + str(tg[1])
+        return str(tg[0]) + " | " + os.path.basename(tg[1])
 
     if(args.list):
         print("\033[31;1m<tag> | <directory>" , "\033[0m")
@@ -364,10 +364,10 @@ if(__name__ == "__main__"):
         print("")
         print("function kdg { cd $( " + os.path.join(keyDirGlobal.script_dir , "keyDir")  + " --goto \"$1\" ) ; }")
         print("")
-        print("function kdt { " + os.path.join(keyDirGlobal.script_dir , "keyDir")  + " --list ; " + \
+        print("function kdt { " + os.path.join(keyDirGlobal.script_dir , "keyDir")  + " --list && " + \
                 "cd $( cat " + os.path.join(keyDirGlobal.script_dir , "kdSelection") + " ) ; }")
         print("")
-        print("function kdf { " + os.path.join(keyDirGlobal.script_dir , "keyDir")  + " --filter \"$1\" ; " \
+        print("function kdf { " + os.path.join(keyDirGlobal.script_dir , "keyDir")  + " --filter \"$1\" && " \
                 + "cd $( cat " + os.path.join(keyDirGlobal.script_dir , "kdSelection") + " ) ; }")
         print("")
         print("alias kd='" + os.path.join(keyDirGlobal.script_dir , "keyDir")  + "'")
