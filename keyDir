@@ -60,7 +60,7 @@ def get_choice(lst , toStr):
 class keyDirGlobal:
     script_dir = None # Path to directory with this script
     keys = {} # {<key> : <short description> ...}
-    root_dir = None # Root directory for searching for .kdKeys files
+    root_dir = [] # List of directories for searching for .kdKeys files
     dirs = [] # [(<directory> , [<keyword> ...]) ...]List of directories with keys
     keyRegex = r"^[a-z0-9]+$"
     tagRegex = r"^kdTag_[a-z0-9]+$"
@@ -223,7 +223,10 @@ if(__name__ == "__main__"):
 
     config = configparser.ConfigParser()
     config.read(os.path.join(keyDirGlobal.script_dir , "keyDir.config"))
-    keyDirGlobal.root_dir = config["PATHS"]["root"]
+    dirs = config.items("PATHS")
+    for key , path in dirs:
+        keyDirGlobal.root_dir.append(path)
+        #keyDirGlobal.root_dir = config["PATHS"]["root"]
 
     # NEW
 
@@ -260,13 +263,14 @@ if(__name__ == "__main__"):
 
     if(args.scan):
         keyDirGlobal.dirs = []
-        for root , dirs , files in os.walk(keyDirGlobal.root_dir):
-            if(".kdKeys" in files):
-                myKeys = []
-                with open(os.path.join(root , ".kdKeys") , "r") as f:
-                    for l in f.readlines():
-                        myKeys.append(l.strip())
-                keyDirGlobal.dirs.append((root , myKeys))
+        for dir in keyDirGlobal.root_dir:
+            for root , dirs , files in os.walk(dir):
+                if(".kdKeys" in files):
+                    myKeys = []
+                    with open(os.path.join(root , ".kdKeys") , "r") as f:
+                        for l in f.readlines():
+                            myKeys.append(l.strip())
+                    keyDirGlobal.dirs.append((root , myKeys))
 
         with open(os.path.join(keyDirGlobal.script_dir , "kdDirs") , "w") as f:
             for d in keyDirGlobal.dirs:
