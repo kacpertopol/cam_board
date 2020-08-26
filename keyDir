@@ -263,8 +263,8 @@ if(__name__ == "__main__"):
 
     if(args.scan):
         keyDirGlobal.dirs = []
-        for dir in keyDirGlobal.root_dir:
-            for root , dirs , files in os.walk(dir):
+        for dr in keyDirGlobal.root_dir:
+            for root , dirs , files in os.walk(dr):
                 if(".kdKeys" in files):
                     myKeys = []
                     with open(os.path.join(root , ".kdKeys") , "r") as f:
