@@ -97,4 +97,30 @@ $ ./xoj_present --help
 - add more documentation to --help 
 - clean up code
 
+## setWacom
 
+Maps a Wacom graphical tablet to a window and conserves the
+tablets aspect ratio.
+
+Additionally, you can rotate the tablet clockwise:
+
+```bash
+$ ./setWacom -c
+```
+
+or anti-clockwise:
+
+```bash
+$ ./setWacom -a
+```
+
+### STATUS
+
+- may not work on all systems
+- not tested extensively
+
+### TODO
+
+- clean up code
+- add dependency checks (*xsetwacom* and *xdotool*)
+- clean up code
