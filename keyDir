@@ -67,6 +67,7 @@ class keyDirGlobal:
     maxPrint = 10
     CURSOR_UP_ONE = '\x1b[1A' 
     ERASE_LINE = '\x1b[2K' 
+    config = None # Configuration file
 
 # FUNCTIONS TO PARSE RPN EXPRESSION
 
@@ -205,6 +206,14 @@ if(__name__ == "__main__"):
                 k , des = l.split('|')
                 k , des = k.strip() , des.strip()
                 keyDirGlobal.keys.update({k : des})
+    if("KEYFILES" in keyDirGlobal.config):
+        files = keyDirGlobal.config.items("KEYFILES")
+        for key , path in dirs:
+            with open(path , 'r') as f:
+                for l in f.readlines():
+                    k , des = l.split('|')
+                    k , des = k.strip() , des.strip()
+                    keyDirGlobal.keys.update({k : des})
 
     ## kdDirs
 
@@ -221,12 +230,12 @@ if(__name__ == "__main__"):
 
     # READ CONFIGURATION FILE
 
-    config = configparser.ConfigParser()
-    config.read(os.path.join(keyDirGlobal.script_dir , "keyDir.config"))
-    dirs = config.items("PATHS")
+    keyDirGlobal.config = configparser.ConfigParser()
+    keyDirGlobal.config.read(os.path.join(keyDirGlobal.script_dir , "keyDir.config"))
+    dirs = keyDirGlobal.config.items("PATHS")
     for key , path in dirs:
         keyDirGlobal.root_dir.append(path)
-        #keyDirGlobal.root_dir = config["PATHS"]["root"]
+        #keyDirGlobal.root_dir = keyDirGlobal.config["PATHS"]["root"]
 
     # NEW
 
