@@ -67,7 +67,7 @@ class keyDirGlobal:
     maxPrint = 10
     CURSOR_UP_ONE = '\x1b[1A' 
     ERASE_LINE = '\x1b[2K' 
-    config = None # Configuration file
+    config = [] # Configuration file
 
 # FUNCTIONS TO PARSE RPN EXPRESSION
 
