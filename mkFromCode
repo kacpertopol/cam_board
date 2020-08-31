@@ -29,7 +29,10 @@ def get_label(ln , line , comment_string , command , in_file , getLabel = True):
     else:
         if(len(strip) >= 2):
             if(strip[0:2] == comment_string):
-                ok = strip[3:]
+                if(len(strip) == 2):
+                    ok = ""
+                elif(strip[2] == " "):
+                    ok = strip[3:]
     return ok
 
 
@@ -146,6 +149,7 @@ if(__name__ == "__main__"):
                 is_ref = get_label(ln , line , comment_string , "ref" , in_file)
                 is_pause = get_label(ln , line , comment_string , "pause" , in_file , getLabel = False)
                 is_break = get_label(ln , line , comment_string , "break" , in_file , getLabel = False)
+                is_md = get_label(ln , line , comment_string , "" , in_file)
                 if(is_insert != None):
                     text = text + "\n" + code_begin + "\n"
                     text = text + labels[is_insert]
@@ -165,10 +169,8 @@ if(__name__ == "__main__"):
                 elif(is_break != None):
                     if(args.nopause == False):
                         text = text + "------------------------------ \n"
-                else:
-                    is_md = get_label(ln , line , comment_string , "" , in_file)
-                    if(is_md != None):
-                        text = text + is_md + "\n"
+                elif(is_md != None):
+                    text = text + is_md + "\n"
 
     # Write file:
     
