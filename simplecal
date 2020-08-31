@@ -11,11 +11,9 @@ import caldata
 if(__name__ == "__main__"):
     parser = argparse.ArgumentParser(description = """
     A simple calendar program. Before use modify the:
-        config
-    file in the
-        simpletools
-    directory. You can use:
-        config_example
+        simplecal.config
+    You can use:
+        simplecal.config.example
     as a template.
 
     Calendar data is read from a text file with the
@@ -149,7 +147,7 @@ if(__name__ == "__main__"):
         args.cd = False
     script_dir = os.path.dirname(os.path.realpath(__file__)) 	
     cparser = configparser.ConfigParser()
-    cparser.read(os.path.join(script_dir , "config"))
+    cparser.read(os.path.join(script_dir , "simplecal.config"))
     if(cparser.has_option("terminal" , "command")):
         caldata.caldata.terminal_command = cparser.get("terminal" , "command")
     if(cparser.has_option("editor" , "command")):
