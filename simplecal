@@ -1,0 +1,206 @@
+#!/usr/bin/python
+
+import argparse
+import datetime
+import re
+import os
+import configparser
+
+import caldata
+
+if(__name__ == "__main__"):
+    parser = argparse.ArgumentParser(description = """
+    A simple calendar program. Before use modify the:
+        config
+    file in the
+        simpletools
+    directory. You can use:
+        config_example
+    as a template.
+
+    Calendar data is read from a text file with the
+    following syntax:
+        #<tag>
+        <data>
+        ...
+        #<tag>
+        <data>
+        ...
+        #end
+    Where
+        <tag>
+    is a tag associated with a calendar event. It can 
+    be one of the following:
+        when - time specification of the calendar event
+        what - short description of the calendar event
+        status - status of the calendar event
+        note - longer note about the calendar event
+        dir - a directory path associated with the event
+    Obly the 
+        when
+    and 
+        end
+    tags are mandatory for each event. The
+        end
+    tag completes each calendar event.
+    Data can be entered in plain text to replace:
+        <data>
+        ...
+
+    Strings that specify the time can be composed from substrings separated by whitespaces.
+    Each substring has to match one of the following patterns, d denotes a digit:
+        dd:dd-dd:dd             - a time range eg 08:00-13:12 (CAREFULL! No spaces!)
+        dd/dd/dddd              - a date in day/month/year format eg 12/02/2021 
+        dd/dd/dddd-             - a date range starging from a day
+        dd/dd/dddd-dd/dd/dddd   - a date range eg 12/02/2021-17/03/2021 (CAREFULL! No spaces!)
+        mon                     - days of the week
+        tue
+        wed
+        thu
+        fri
+        sat
+        sun
+        |                       - or operator eg mon tue wed | means either monday, tuesday or wednday
+        &                       - and operator eg mon 12:00-13:00 & means monday between 12:00 and 13:00
+
+    Multiple | & operators can be used in reverse polish notation eg:
+        mon 12:00-14:00 & tue 15:00-17:00 & |
+    means monday between 12:00 and 14:00 or tuesday between 15:00 and 17:00.
+
+    EXAMPLES
+
+    Prints events from the current day, week or month:
+        simplecal -d
+        simplecal -w
+        simplecal -m
+    from 16/03/2020:
+        simplecal -b 16/03/2020 -d
+    from month containing 16/03/2020:
+        simplecal -b 16/03/2020 -m
+    from the next 100 days:
+        simplecal -n 100
+    from the next 100 days, begining at 16/03/2020:
+        simplecal -b 16/03/2020 -n 100
+    from the current day and open a directory choice dialog:
+        simplecal -d -c
+
+    An event that lasts the whole weekend, might look like this in the calendar file: 
+        #when
+        sat sun |
+        $what
+        WEEKEND!
+        #end
+    one that takes place on a specific day might look like this:
+        #when
+        16/03/2020
+        #what
+        Important day
+        #note
+        Some important information
+        on the important day.
+        #end
+    one that takes place on a specific day and in a specific time period:
+        #when
+        16/03/2020-16/03/2020 12:00-13:00 &
+        #what
+        Important lunch.
+        #end
+    one that takes place on weekends, between 14:00 and 15:15 and after 16/03/2020:
+        #when
+        sat sun | 14:00-15:15 16/03/2020 &
+        #what
+        Some event.
+        #end
+    one that takes place on weekends, between 15:00-15:15 and between 16/03/2020-16/04/2020,
+    additionally this event has a directory associated with it on machine bigComputer:
+        #when
+        sat sun | 14:00-15:15 16/03/2020-16/04/2020 &
+        #what
+        Some event.
+        #dir
+        bigComputer@/home/bob/event_directory
+        #end
+    one that is a todo:
+        #when
+        sat
+        #what
+        PARTY!
+        #status
+        todo
+        #end
+
+    """ , formatter_class=argparse.RawTextHelpFormatter)
+    parser.add_argument("-e" , "--escape" , help = "Print output without escape characters." , 
+            action = "store_const" , const = True)
+    parser.add_argument("-f" , "--file" , help = "Path to file with the calendar.")
+    parser.add_argument("-b" , "--begin" , help = "Starting day. If not set - current day.")
+    parser.add_argument("-s" , "--status" , help = "Filter events by status.")
+    parser.add_argument("-d" , "--day" , help = "Print events from a single day (by default the current day).",
+            action = "store_const" , const = True)
+    parser.add_argument("-w" , "--week" , help = "Print events from the whole week (by default the week containig the current day, see -b).",
+            action = "store_const" , const = True)
+    parser.add_argument("-m" , "--month" , help = "Print events from the whole month (by default the month containing the current day, see -b).",
+            action = "store_const" , const = True)
+    parser.add_argument("-c" , "--cd" , help = "Open directory choice dialog.",
+            action = "store_const" , const = True)
+    parser.add_argument("-n" , "--next" , help = "The argument is the number of days to print starting -b (by default starting with the current day).")
+    args = parser.parse_args()
+    if(args.cd == None):
+        args.cd = False
+    script_dir = os.path.dirname(os.path.realpath(__file__)) 	
+    cparser = configparser.ConfigParser()
+    cparser.read(os.path.join(script_dir , "config"))
+    if(cparser.has_option("terminal" , "command")):
+        caldata.caldata.terminal_command = cparser.get("terminal" , "command")
+    if(cparser.has_option("editor" , "command")):
+        caldata.caldata.noteEditor = cparser.get("editor" , "command")
+    if(cparser.has_option("computer" , "name")):
+        caldata.caldata.computer_name = cparser.get("computer" , "name")
+    if(args.escape != None):
+        caldata.caldata.reset_escape()
+    if(args.file != None):
+        args_file = args.file
+    elif(cparser.has_option("paths" , "main_cal_file")):
+        args_file = cparser.get("paths" , "main_cal_file")
+    else:
+        raise ValueError("No path to calendar file specified.")
+    status_filter = None
+    dateRE = re.compile(r'^\d\d/\d\d/\d\d\d\d$')
+    if(args.status != None):
+        status_filter = args.status.strip()
+    if(args.day != None):
+        tdy = datetime.datetime.today()
+        starting_day = datetime.datetime(tdy.year , tdy.month , tdy.day , 0 , 0 , 0)
+        if(args.begin != None):
+            if(dateRE.match(args.begin) != None):
+                sDAY , sMTH , sYER = int(args.begin[0:2]) , int(args.begin[3:5]) , int(args.begin[6:10])
+                starting_day = datetime.datetime(sYER , sMTH , sDAY , 0 , 0 , 0)
+        cal = caldata.caldata(args_file)
+        cal.print_day(starting_day , status = status_filter , cd = args.cd)
+    if(args.week != None):
+        tdy = datetime.datetime.today()
+        starting_day = datetime.date(tdy.year , tdy.month , tdy.day)
+        if(args.begin != None):
+            if(dateRE.match(args.begin) != None):
+                sDAY , sMTH , sYER = int(args.begin[0:2]) , int(args.begin[3:5]) , int(args.begin[6:10])
+                starting_day = datetime.datetime(sYER , sMTH , sDAY)
+        cal = caldata.caldata(args_file)
+        cal.print_week(starting_day , status = status_filter , cd = args.cd)
+    if(args.month != None):
+        tdy = datetime.datetime.today()
+        starting_day = datetime.date(tdy.year , tdy.month , tdy.day)
+        if(args.begin != None):
+            if(dateRE.match(args.begin) != None):
+                sDAY , sMTH , sYER = int(args.begin[0:2]) , int(args.begin[3:5]) , int(args.begin[6:10])
+                starting_day = datetime.datetime(sYER , sMTH , sDAY)
+        cal = caldata.caldata(args_file)
+        cal.print_month(starting_day , status = status_filter , cd = args.cd)
+    if(args.next != None):
+        tdy = datetime.datetime.today()
+        starting_day = datetime.date(tdy.year , tdy.month , tdy.day)
+        if(args.begin != None):
+            if(dateRE.match(args.begin) != None):
+                sDAY , sMTH , sYER = int(args.begin[0:2]) , int(args.begin[3:5]) , int(args.begin[6:10])
+                starting_day = datetime.datetime(sYER , sMTH , sDAY)
+        cal = caldata.caldata(args_file)
+        cal.print_next(starting_day , int(args.next) , status = status_filter , cd = args.cd)
