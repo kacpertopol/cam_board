@@ -124,3 +124,22 @@ $ ./setWacom -a
 - clean up code
 - add dependency checks (*xsetwacom* and *xdotool*)
 - clean up code
+
+## simpleCal
+
+Simple calendar application. Uses a single text file
+from *simpleCal.config* to read calendar events.
+
+Examples and more information can be obtained using:
+
+```bash
+$ ./simplecal --help
+```
+
+### STATUS
+
+- not tested extensively
+
+### TODO
+
+- clean up code
