@@ -27,10 +27,9 @@ def get_label(ln , line , comment_string , command , in_file , getLabel = True):
                 else:
                     ok = ""
     else:
-        split = strip.split()
-        if(len(split) >= 1):
-            if(split[0] == comment_string):
-                ok = strip[2:].strip()
+        if(len(strip) >= 2):
+            if(strip[0:2] == comment_string):
+                ok = strip[3:]
     return ok
 
 
@@ -142,32 +141,34 @@ if(__name__ == "__main__"):
         with open(in_file , 'r') as input_file:
             for line in input_file.readlines():
                 ln = ln + 1
+
                 is_insert = get_label(ln , line , comment_string , "insert" , in_file)
+                is_ref = get_label(ln , line , comment_string , "ref" , in_file)
+                is_pause = get_label(ln , line , comment_string , "pause" , in_file , getLabel = False)
+                is_break = get_label(ln , line , comment_string , "break" , in_file , getLabel = False)
                 if(is_insert != None):
                     text = text + "\n" + code_begin + "\n"
                     text = text + labels[is_insert]
                     text = text + code_end + "\n\n"
+                elif(is_ref != None):
+                    text = text + '\[' 
+                    n = 0
+                    for num in labelLines[is_ref]:
+                        n = n + 1
+                        text = text + str(num)
+                        if(n != len(labelLines[is_ref])):
+                            text = text + " , "
+                    text = text + '\] \n'
+                elif(is_pause != None):
+                    if(args.nopause == False):
+                        text = text + ". . . \n"
+                elif(is_break != None):
+                    if(args.nopause == False):
+                        text = text + "------------------------------ \n"
                 else:
-                    is_ref = get_label(ln , line , comment_string , "ref" , in_file)
-                    if(is_ref != None):
-                        text = text + '\[' 
-                        n = 0
-                        for num in labelLines[is_ref]:
-                            n = n + 1
-                            text = text + str(num)
-                            if(n != len(labelLines[is_ref])):
-                                text = text + " , "
-                        text = text + '\] \n'
-
-                    else:
-                        is_pause = get_label(ln , line , comment_string , "pause" , in_file , getLabel = False)
-                        if(is_pause != None):
-                            if(args.nopause == False):
-                                text = text + ". . . \n"
-                        else:
-                            is_md = get_label(ln , line , comment_string , "" , in_file)
-                            if(is_md != None):
-                                text = text + is_md + "\n"
+                    is_md = get_label(ln , line , comment_string , "" , in_file)
+                    if(is_md != None):
+                        text = text + is_md + "\n"
 
     # Write file:
     

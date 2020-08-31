@@ -18,6 +18,7 @@ if(__name__ == "__main__"):
 
     parser.add_argument("--clockwise" , "-c" , action = "store_true" , help = "Rotate tablet clockwise.")
     parser.add_argument("--anticlockwise" , "-a" , action = "store_true" , help = "Rotate tablet anti-clockwise.")
+    parser.add_argument("--up" , "-u" , action = "store_true" , help = "Rotate tablet 180 deg.")
 
     args = parser.parse_args()
 
@@ -36,7 +37,9 @@ if(__name__ == "__main__"):
     for tab in Geom.tablets:
         subprocess.run(['xsetwacom' , 'set' , tab , "Rotate" , "none"])
         rotated = False
-        if(args.anticlockwise):
+        if(args.up):
+            subprocess.run(['xsetwacom' , 'set' , tab , "Rotate" , "half"])
+        elif(args.anticlockwise):
             subprocess.run(['xsetwacom' , 'set' , tab , "Rotate" , "ccw"])
             rotated = True
         elif(args.clockwise):
