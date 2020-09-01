@@ -50,7 +50,7 @@ if(__name__ == "__main__"):
         dd:dd-dd:dd             - a time range eg 08:00-13:12 (CAREFULL! No spaces!)
         dd/dd/dddd              - a date in day/month/year format eg 12/02/2021 
         dd/                     - a specific day in a month eg 01/
-        /dd/                     - a specific month eg /08/
+        /dd/                    - a specific month eg /08/
         dd/dd/dddd-             - a date range starging from a day
         dd/dd/dddd-dd/dd/dddd   - a date range eg 12/02/2021-17/03/2021 (CAREFULL! No spaces!)
         mon                     - days of the week
