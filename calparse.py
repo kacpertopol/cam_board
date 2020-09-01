@@ -107,6 +107,7 @@ def calparse(string):
     daterangeRE = re.compile(r'^\d\d/\d\d/\d\d\d\d-\d\d/\d\d/\d\d\d\d$')
     dateRE = re.compile(r'^\d\d/\d\d/\d\d\d\d$')
     datefromRE = re.compile(r'^\d\d/\d\d/\d\d\d\d-$')
+    monthdayRE = re.compile(r'^\d\d/$')
     #funlist = string.split()
     funlist = string.split()
     for fun in funlist:
@@ -115,6 +116,7 @@ def calparse(string):
         ok = ok or (timerangeRE.match(fun) != None)
         ok = ok or (daterangeRE.match(fun) != None)
         ok = ok or (dateRE.match(fun) != None)
+        ok = ok or (monthdayRE.match(fun) != None)
         ok = ok or (datefromRE.match(fun) != None)
         ok = ok or (fun == "|")
         ok = ok or (fun == "&")
@@ -150,6 +152,10 @@ def calparse(string):
             sDATE = datetime.date(sYER , sMTH , sDAY)
             fDATE = datetime.date(fYER , fMTH , fDAY)
             lam = lambda d , data = (sDATE , fDATE) : (datetime.date(d.year , d.month , d.day) >= data[0]) and (datetime.date(d.year , d.month , d.day) <= data[1]) 
+            funlambda.append(lam) 
+        elif(monthdayRE.match(fun) != None):
+            sDAY = int(fun[0:2]) 
+            lam = lambda d , data = sDAY : (d.day == data) 
             funlambda.append(lam) 
         elif(daterangeRE.match(fun) != None):
             sDAY , sMTH , sYER = int(fun[0:2]) , int(fun[3:5]) , int(fun[6:10])
