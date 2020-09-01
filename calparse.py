@@ -14,66 +14,6 @@ def _andjoin(d , functions):
         result = result and fun(d)
     return result
 
-datefromRE = re.compile(r'^\d\d/\d\d/\d\d\d\d-$')
-def datefromFun(d , fun):
-    sDAY , sMTH , sYER = int(fun[0:2]) , int(fun[3:5]) , int(fun[6:10])
-    sDATE = datetime.date(sYER , sMTH , sDAY)
-    datetime.date(d.year , d.month , d.day) >= sDATE
-
-weekday = {"mon" : 0 , "tue" : 1 , "wed" : 2 , "thu" : 3 , "fri" : 4 , "sat" : 5 , "sun" : 6}
-weekdayRE = re.compile(r'mon|tue|wed|thu|fri|sat|sun')
-def weekdayFun(d , fun):
-    return d.weekday() == weekday[fun]
-
-timerangeRE = re.compile(r'^\d\d:\d\d-\d\d:\d\d$')
-def timerangeFun(d , fun):
-    sH , sM = int(fun[0:2]) , int(fun[3:5]) 
-    sMIN = sH * 60 + sM
-    fH , fM = int(fun[6:8]) , int(fun[9:11]) 
-    fMIN = fH * 60 + fM
-    data = (sMIN , fMIN)
-    (
-        ((d.hour * 60 + d.minute >= data[0]) and (d.hour * 60 + d.minute < data[1])) 
-        if 
-        (type(d) == datetime.datetime)
-        else
-        True
-    )
-
-dateRE = re.compile(r'^\d\d/\d\d/\d\d\d\d$')
-def dateFun(d , fun):
-    sDAY , sMTH , sYER = int(fun[0:2]) , int(fun[3:5]) , int(fun[6:10])
-    fDAY , fMTH , fYER = int(fun[0:2]) , int(fun[3:5]) , int(fun[6:10])
-    sDATE = datetime.date(sYER , sMTH , sDAY)
-    fDATE = datetime.date(fYER , fMTH , fDAY)
-    data = (sDATE , fDATE) 
-    (
-            (datetime.date(d.year , d.month , d.day) >= data[0]) 
-            and 
-            (datetime.date(d.year , d.month , d.day) <= data[1])
-    )
-
-daterangeRE = re.compile(r'^\d\d/\d\d/\d\d\d\d-\d\d/\d\d/\d\d\d\d$')
-def daterangeFun(d , fun):
-    sDAY , sMTH , sYER = int(fun[0:2]) , int(fun[3:5]) , int(fun[6:10])
-    fDAY , fMTH , fYER = int(fun[11:13]) , int(fun[14:16]) , int(fun[17:21])
-    sDATE = datetime.date(sYER , sMTH , sDAY)
-    fDATE = datetime.date(fYER , fMTH , fDAY)
-    data = (sDATE , fDATE)
-    (
-            (datetime.date(d.year , d.month , d.day) >= data[0]) 
-            and 
-            (datetime.date(d.year , d.month , d.day) <= data[1])
-    )
-
-pairs = [
-            [datefromRE , datefromFun],
-            [weekdayRE , weekdayFun],
-            [timerangeRE , timerangeFun],
-            [dateRE , dateFun],
-            [daterangeRE , daterangeFun]            
-        ]
-
 def calparse(string):
     """
     Returns a funcion that can be applied to a datetime.datetime object.
