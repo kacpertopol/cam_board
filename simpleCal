@@ -60,8 +60,10 @@ if(__name__ == "__main__"):
         fri
         sat
         sun
-        |                       - or operator eg mon tue wed | means either monday, tuesday or wednday
-        &                       - and operator eg mon 12:00-13:00 & means monday between 12:00 and 13:00
+        |                       - binary or operator eg mon tue | means either monday, tuesday
+        &                       - binary and operator eg mon 12:00-13:00 & means monday between 12:00 and 13:00
+        ||                      - or operator takes everything off of stack, eg mon tue wed ||
+        &&                      - and operator takes everything off of stack, eg /09/ mon 12:00-13:00 &&
 
     Multiple | & operators can be used in reverse polish notation eg:
         mon 12:00-14:00 & tue 15:00-17:00 & |

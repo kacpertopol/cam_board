@@ -62,6 +62,8 @@ def calparse(string):
         ok = ok or (datefromRE.match(fun) != None)
         ok = ok or (fun == "|")
         ok = ok or (fun == "&")
+        ok = ok or (fun == "||")
+        ok = ok or (fun == "&&")
         if(not ok):
             raise ValueError("Wrong syntax in time specification for token: " + fun + " .")
 
@@ -111,9 +113,23 @@ def calparse(string):
             lam = lambda d , data = (sDATE , fDATE) : (datetime.date(d.year , d.month , d.day) >= data[0]) and (datetime.date(d.year , d.month , d.day) <= data[1]) 
             funlambda.append(lam) 
         elif(fun == "|"):
+            if(len(funlambda) < 2):
+                raise ValueError("Binary operator | requires a stack of at least 2 elements.")
+            part = funlambda[:-2]
+            rest = funlambda[-2:]
+            lam = lambda d , data = rest : _orjoin(d , data)
+            funlambda = part + [lam] 
+        elif(fun == "&"):
+            if(len(funlambda) < 2):
+                raise ValueError("Binary operator & requires a stack of at least 2 elements.")
+            part = funlambda[:-2]
+            rest = funlambda[-2:]
+            lam = lambda d , data = rest : _andjoin(d , data)
+            funlambda = part + [lam] 
+        elif(fun == "||"):
             lam = lambda d , data = funlambda : _orjoin(d , data)
             funlambda = [lam] 
-        elif(fun == "&"):
+        elif(fun == "&&"):
             lam = lambda d , data = funlambda : _andjoin(d , data)
             funlambda = [lam] 
     if(len(funlambda) == 1):
