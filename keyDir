@@ -138,19 +138,33 @@ def parseRPN(expr):
     words = expr.split()
     ok = True
     for w in words:
-        ok = ok and (re.match(keyDirGlobal.keyRegex , w) or re.match(r"^[*+!]$" , w))
+        ok = ok and (re.match(keyDirGlobal.keyRegex , w) or re.match(r"^[*+!]$" , w) or w == "**" or w == "++")
     if(not ok):
         raise ValueError("RPN expression has wrong format.")
     fun_stack = []
     for w in words:
         if(w == "+"):
+            if(len(fun_stack) < 2):
+                raise ValueError("Binary operator + requires a stack of at least 2 elements.")
+            part = fun_stack[:-2]
+            rest = fun_stack[-2:]
+            nf = plusFun(rest)
+            fun_stack = part + [nf]
+        elif(w == "*"):
+            if(len(fun_stack) < 2):
+                raise ValueError("Binary operator * requires a stack of at least 2 elements.")
+            part = fun_stack[:-2]
+            rest = fun_stack[-2:]
+            nf = timesFun(rest)
+            fun_stack = part + [nf]
+        elif(w == "++"):
             nf = plusFun(fun_stack)
             fun_stack = [nf]
-        elif(w == "*"):
+        elif(w == "**"):
             nf = timesFun(fun_stack)
             fun_stack = [nf]
         elif(w == "!"):
-            if(len(fun_stack) != 1):
+            if(len(fun_stack) < 1):
                 raise ValueError("The ! operator in RPN expression expects 1 element on stack.")
             nf = notFun(fun_stack[0])
             fun_stack = [nf]
