@@ -88,13 +88,13 @@ class caldata:
 
     def print_pop_event(e , time):
         if(("status" in e) and (e["status"].strip() == "todo")):
-            print(bcolors.BOLD + bcolors.OKBLUE + (e["nof_spaces"] * " ") + "--- " + "TODO, " + time + " --- " + e["what"].strip() + bcolors.ENDC)
+            print(bcolors.BOLD + bcolors.OKBLUE + (e["nof_spaces"] * " ") + "- " + time + " - TODO : " + e["what"].strip() + bcolors.ENDC)
         else:
-            print(bcolors.BOLD + bcolors.OKBLUE + (e["nof_spaces"] * " ") + "--- " + time + " --- " + e["what"].strip() + bcolors.ENDC)
+            print(bcolors.BOLD + bcolors.OKBLUE + (e["nof_spaces"] * " ") + "- " + time + " - : " + e["what"].strip() + bcolors.ENDC)
 
     def print_put_event(e , time):
         if(("status" in e) and (e["status"].strip() == "todo")):
-            print(bcolors.BOLD + bcolors.OKGREEN + (e["nof_spaces"] * " ") + "+++ " + "TODO, " + time + " +++ " + e["what"].strip() + bcolors.ENDC)
+            print(bcolors.BOLD + bcolors.OKGREEN + (e["nof_spaces"] * " ") + "+ " + time + " + TODO : " + e["what"].strip() + bcolors.ENDC)
             if("note" in e):
                 #print("")
                 print(e["nof_spaces"] * ' ' + "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
@@ -102,7 +102,7 @@ class caldata:
                 print(e["nof_spaces"] * ' ' + "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
                 #print("")
         else:
-            print(bcolors.BOLD + bcolors.OKGREEN + (e["nof_spaces"] * " ") + "+++ " + time + " +++ " + e["what"].strip() + bcolors.ENDC)
+            print(bcolors.BOLD + bcolors.OKGREEN + (e["nof_spaces"] * " ") + "+ " + time + " + : " + e["what"].strip() + bcolors.ENDC)
             if("note" in e):
                 #print("")
                 print(e["nof_spaces"] * ' ' + "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
