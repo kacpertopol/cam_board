@@ -5,6 +5,7 @@ import argparse
 import re
 import configparser
 import sys , tty , termios
+import subprocess
 
 # NICE LIST MENU
 
@@ -179,6 +180,12 @@ if(__name__ == "__main__"):
 
     parser.add_argument("--new" , "-n" , nargs = "+" , help = "Set keywords for current directories .kdKeys.")
     
+    parser.add_argument("--yank" , "-y" , nargs = "+" , help = "Yank file or directory.")
+    
+    parser.add_argument("--operate" , "-o" , help = "Run operation on yanked paths. The argument is a command, the @@@ symbol will be replaced by the path.")
+    
+    parser.add_argument("--unyank" , "-u" , action = "store_true" , help = "Clear yanked paths.")
+    
     parser.add_argument("--scan" , "-s" , action="store_true" , help = "Scan system for .kdKeys files.")
     
     parser.add_argument("--tag" , "-t" , help = "Tag current directory, with two argument the second one is the tag description.")
@@ -281,6 +288,26 @@ if(__name__ == "__main__"):
             with open(os.path.join(os.getcwd() , '.kdKeys') , 'w') as f:
                 for k in dirkeys:
                     f.write(k + "\n")
+
+    # YANK
+
+    if(args.yank != None):
+        with open(os.path.join(keyDirGlobal.script_dir , "kdYanked") , 'a+') as f:
+            for pth in args.yank:
+                f.write(os.path.abspath(pth) + "\n")
+    
+    # OPERATE
+
+    if(args.operate != None):
+        with open(os.path.join(keyDirGlobal.script_dir , "kdYanked") , 'r') as f:
+            for pth in f.readlines():
+                subprocess.run(args.operate.replace("@@@" , pth.strip()) , shell = True)
+
+    # UNYANK
+
+    if(args.unyank):
+        with open(os.path.join(keyDirGlobal.script_dir , "kdYanked") , 'w') as f:
+            f.write("")
 
     # SCAN
 
