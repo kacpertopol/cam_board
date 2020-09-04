@@ -137,3 +137,8 @@ kdTag*
 keyDir.config
 simpleCal.config
 kdYanked
+rssErrors
+rssFeeds
+rssHistory
+rssReader.config
+rssURLs

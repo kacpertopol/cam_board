@@ -143,3 +143,7 @@ $ ./simplecal --help
 ### TODO
 
 - clean up code
+
+## rssReader
+
+Small application to scan feeds. TODO
