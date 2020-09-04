@@ -11,6 +11,8 @@ import pickle
 import datetime
 import subprocess
 
+import niceMenu
+
 # NICE LIST MENU
 
 def get_choice(lst , toStr):
@@ -373,16 +375,14 @@ if(__name__ == "__main__"):
             s = fun(d[0])
             if(s > 0 and (not d[3] in seen)):
                 results.append(d)
-        sel = results[0:rssReaderGlobal.maxPrint]
-        print("\033[31;1m" , "<feed> | <title>\033[0m")
-        choice = get_choice(sel , toStrD)
+        #sel = results[0:rssReaderGlobal.maxPrint]
+        choice = niceMenu.niceMenu.get_choice(sel , toStrD , "<feed> | <title>")
         sys.stdout.write(rssReaderGlobal.CURSOR_UP_ONE)
         sys.stdout.write(rssReaderGlobal.ERASE_LINE)
         if(choice != None):
             with open(os.path.join(rssReaderGlobal.script_dir , "rssHistory") , 'a+') as f:
                 f.write(" ".join(choice[0]) + " ||| " + " ||| ".join(choice[1:]) + "\n") 
-            print("\033[31;1m" , "<open with>\033[0m")
-            pr = get_choice(list(rssReaderGlobal.programs) , toStrP)
+            pr = niceMenu.niceMenu.get_choice(list(rssReaderGlobal.programs) , toStrP , "<open with>")
             sys.stdout.write(rssReaderGlobal.CURSOR_UP_ONE)
             sys.stdout.write(rssReaderGlobal.ERASE_LINE)
             print("RUNNING: " + " ".join([rssReaderGlobal.programs[pr] , choice[3]]))
