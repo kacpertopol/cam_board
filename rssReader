@@ -70,7 +70,6 @@ class rssReaderGlobal:
     urls = [] # Feed URLs
     history = [] # history
     keyRegex = r"^[a-z0-9]+$"
-    maxPrint = 20
     programs = {}
     CURSOR_UP_ONE = '\x1b[1A' 
     ERASE_LINE = '\x1b[2K' 
@@ -375,8 +374,7 @@ if(__name__ == "__main__"):
             s = fun(d[0])
             if(s > 0 and (not d[3] in seen)):
                 results.append(d)
-        #sel = results[0:rssReaderGlobal.maxPrint]
-        choice = niceMenu.niceMenu.get_choice(sel , toStrD , "<feed> | <title>")
+        choice = niceMenu.niceMenu.get_choice(results , toStrD , "<feed> | <title>")
         sys.stdout.write(rssReaderGlobal.CURSOR_UP_ONE)
         sys.stdout.write(rssReaderGlobal.ERASE_LINE)
         if(choice != None):
