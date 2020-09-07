@@ -13,55 +13,6 @@ import subprocess
 
 import niceMenu
 
-# NICE LIST MENU
-
-def get_choice(lst , toStr):
-    """
-    Arguments:
-        lst - list of choices
-        toStr - function that turns a single element of lst into a string
-    Return value:
-        single element from lst
-    """
-    if(len(lst) == 0):
-        return None
-    ok = True
-    fin = False
-    ch = 0
-    while(not fin):
-        n = 0
-        for el in lst:
-            if(n == ch):
-                #sys.stdout.write("> ")
-                sys.stdout.write("\033[7m" + toStr(el) + "\033[0m\n")
-            else:
-                #sys.stdout.write("  ")
-                sys.stdout.write(toStr(el) + "\n")
-            n += 1
-        fd = sys.stdin.fileno()
-        old = termios.tcgetattr(fd)
-        tty.setraw(fd)
-        char = sys.stdin.read(1)
-        termios.tcsetattr(fd , termios.TCSADRAIN , old)
-        if(char == "k"):
-            ch -= 1
-        elif(char == "j"):
-            ch += 1
-        elif(char == "h"):
-            ok = False
-            fin = True
-        elif(char == "l"):
-            fin = True 
-        ch = ch % len(lst)
-        for n in range(len(lst)):
-            sys.stdout.write(rssReaderGlobal.ERASE_LINE)
-            sys.stdout.write(rssReaderGlobal.CURSOR_UP_ONE)
-    sys.stdout.write(rssReaderGlobal.ERASE_LINE)
-    if(ok):
-        return lst[ch]
-    else:
-        return None
-
 # GLOBAL VARIABLES
 
 class rssReaderGlobal:
