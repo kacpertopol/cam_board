@@ -381,7 +381,7 @@ if(__name__ == "__main__"):
             pr = niceMenu.niceMenu.get_choice(list(rssReaderGlobal.programs) , toStrP , "<open with>")
             sys.stdout.write(rssReaderGlobal.CURSOR_UP_ONE)
             sys.stdout.write(rssReaderGlobal.ERASE_LINE)
-            print("RUNNING: " + " ".join([rssReaderGlobal.programs[pr] , choice[3]]))
+            print("RUNNING: " + rssReaderGlobal.programs[pr].replace("@@@" , choice[3]))
             if(pr != None):
                 rc = subprocess.run(rssReaderGlobal.programs[pr].replace("@@@" , choice[3]) , shell = True) 
                 if(rc.returncode == 0):
