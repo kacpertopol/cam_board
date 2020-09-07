@@ -383,7 +383,7 @@ if(__name__ == "__main__"):
             sys.stdout.write(rssReaderGlobal.ERASE_LINE)
             print("RUNNING: " + " ".join([rssReaderGlobal.programs[pr] , choice[3]]))
             if(pr != None):
-                rc = subprocess.run([rssReaderGlobal.programs[pr] , choice[3]]) 
+                rc = subprocess.run(rssReaderGlobal.programs[pr].replace("@@@" , choice[3]) , shell = True) 
                 if(rc.returncode == 0):
                     print("WRITTING TO: " + os.path.join(rssReaderGlobal.script_dir , "rssHistory"))
                     with open(os.path.join(rssReaderGlobal.script_dir , "rssHistory") , 'a+') as f:
