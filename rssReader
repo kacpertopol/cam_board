@@ -382,10 +382,11 @@ if(__name__ == "__main__"):
             sys.stdout.write(rssReaderGlobal.CURSOR_UP_ONE)
             sys.stdout.write(rssReaderGlobal.ERASE_LINE)
             print("RUNNING: " + rssReaderGlobal.programs[pr].replace("@@@" , choice[3]))
+            print("WRITTING TO: " + os.path.join(rssReaderGlobal.script_dir , "rssHistory"))
+            with open(os.path.join(rssReaderGlobal.script_dir , "rssHistory") , 'a+') as f:
+                f.write(" ".join(choice[0]) + " ||| " + " ||| ".join(choice[1:]) + "\n") 
             if(pr != None):
                 rc = subprocess.run(rssReaderGlobal.programs[pr].replace("@@@" , choice[3]) , shell = True) 
-                if(rc.returncode == 0):
-                    print("WRITTING TO: " + os.path.join(rssReaderGlobal.script_dir , "rssHistory"))
-                    with open(os.path.join(rssReaderGlobal.script_dir , "rssHistory") , 'a+') as f:
-                        f.write(" ".join(choice[0]) + " ||| " + " ||| ".join(choice[1:]) + "\n") 
+                if(rc.returncode != 0):
+                    print("ERRORS OCCURED")
 
