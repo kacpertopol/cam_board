@@ -15,8 +15,8 @@ class niceMenu:
         term_columns = term_size.columns
         term_lines = term_size.lines
 
-        max_width = int(term_columns * 0.7)
-        max_height = int(term_lines * 0.5)
+        max_width = int(term_columns * 0.9)
+        max_height = int(term_lines * 0.8)
 
         print("\033[31;1m" + top + "\033[0m")
 
