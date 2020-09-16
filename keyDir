@@ -389,10 +389,10 @@ if(__name__ == "__main__"):
             s = fun(d[1])
             results.append((s , d[0] , d[1]))
         results.sort(key = lambda x : -x[0])
-        sel = results[-keyDirGlobal.maxPrint:]
-        ii = len(sel)
+        #sel = results[-keyDirGlobal.maxPrint:]
+        #ii = len(sel)
 #        print("\033[31;1m" , "<score> | <dir name> [<key words> ...]\033[0m")
-        choice = niceMenu.niceMenu.get_choice(sel , toStrD , "<score> | <dir name> [<key words> ...]")
+        choice = niceMenu.niceMenu.get_choice(results , toStrD , "<score> | <dir name> [<key words> ...]")
         if(choice != None):
             with open(os.path.join(keyDirGlobal.script_dir , "kdSelection") , "w") as f:
                 f.write(choice[1])
