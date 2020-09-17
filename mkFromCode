@@ -96,7 +96,8 @@ if(__name__ == "__main__"):
                             in_label = False
                             n_begin = n_begin - 1
                     if(in_label):
-                        labels.update({lb : labels[lb] + line})
+                        if(line.strip()[0:2] != "#@"):
+                            labels.update({lb : labels[lb] + line})
                     is_begin = get_label(ln , line , comment_string , "begin" , in_file) 
                     if(is_begin != None):
                         if(is_begin == lb):
