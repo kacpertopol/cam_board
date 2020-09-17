@@ -4,7 +4,7 @@ import sys , tty , termios
 class niceMenu:
     CURSOR_UP_ONE = '\x1b[1A' 
     ERASE_LINE = '\x1b[2K' 
-    def get_choice(lst , toStr , top):
+    def get_choice(lst , toStr , top , toPrv = None , bottom = None):
         """
         Arguments:
             lst - list of choices
@@ -16,7 +16,7 @@ class niceMenu:
         term_lines = term_size.lines
 
         max_width = int(term_columns * 0.9)
-        max_height = int(term_lines * 0.8)
+        max_height = int(term_lines * 0.7)
 
         print("\033[31;1m" + top + "\033[0m")
 
@@ -39,6 +39,13 @@ class niceMenu:
                 else:
                     sys.stdout.write(toStr(el)[t_begin : t_end] + "\n")
                 n += 1
+
+            if(toPrv != None):
+                if(bottom != None):
+                    sys.stdout.write("\033[31;1m" + bottom + "\033[0m\n")
+                prv = toPrv(lst[ch])[t_begin : t_end] + "\n"
+                sys.stdout.write(prv + "\n")
+
 
             fd = sys.stdin.fileno()
             old = termios.tcgetattr(fd)
@@ -75,6 +82,14 @@ class niceMenu:
                 n_end = n_begin + max_height 
              
             for n in range(len(fragment)):
+                sys.stdout.write(niceMenu.ERASE_LINE)
+                sys.stdout.write(niceMenu.CURSOR_UP_ONE)
+            if(toPrv != None):
+                sys.stdout.write(niceMenu.ERASE_LINE)
+                sys.stdout.write(niceMenu.CURSOR_UP_ONE)
+                sys.stdout.write(niceMenu.ERASE_LINE)
+                sys.stdout.write(niceMenu.CURSOR_UP_ONE)
+            if(bottom != None):
                 sys.stdout.write(niceMenu.ERASE_LINE)
                 sys.stdout.write(niceMenu.CURSOR_UP_ONE)
         sys.stdout.write(niceMenu.ERASE_LINE)

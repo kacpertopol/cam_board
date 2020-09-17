@@ -310,7 +310,10 @@ if(__name__ == "__main__"):
     # FILTER
 
     def toStrD(el):
-        return str(el[1]) + " | " + str(el[2])
+        return str(el[2])
+
+    def toStrPrv(el):
+        return str(el[1])
 
     def toStrP(el):
         return el
@@ -325,13 +328,13 @@ if(__name__ == "__main__"):
             s = fun(d[0])
             if(s > 0 and (not d[3] in seen)):
                 results.append(d)
-        choice = niceMenu.niceMenu.get_choice(results , toStrD , "<feed> | <title>")
-        sys.stdout.write(rssReaderGlobal.CURSOR_UP_ONE)
-        sys.stdout.write(rssReaderGlobal.ERASE_LINE)
+        choice = niceMenu.niceMenu.get_choice(results , toStrD , "<title>" , toPrv = toStrPrv , bottom = "<feed>")
+        #sys.stdout.write(rssReaderGlobal.CURSOR_UP_ONE)
+        #sys.stdout.write(rssReaderGlobal.ERASE_LINE)
         if(choice != None):
             pr = niceMenu.niceMenu.get_choice(list(rssReaderGlobal.programs) , toStrP , "<open with>")
-            sys.stdout.write(rssReaderGlobal.CURSOR_UP_ONE)
-            sys.stdout.write(rssReaderGlobal.ERASE_LINE)
+            #sys.stdout.write(rssReaderGlobal.CURSOR_UP_ONE)
+            #sys.stdout.write(rssReaderGlobal.ERASE_LINE)
             print("RUNNING: " + rssReaderGlobal.programs[pr].replace("@@@" , choice[3]))
             print("WRITTING TO: " + os.path.join(rssReaderGlobal.script_dir , "rssHistory"))
             with open(os.path.join(rssReaderGlobal.script_dir , "rssHistory") , 'a+') as f:
