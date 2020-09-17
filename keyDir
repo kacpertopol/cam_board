@@ -299,8 +299,11 @@ if(__name__ == "__main__"):
     # LIST
 
     def toStrT(tg):
-        return str(tg[0]) + " | " + os.path.basename(tg[1])
+        return str(tg[0])
 
+    def toPrvT(tg):
+        return str(tg[1])
+    
     if(args.list):
 #        print("\033[31;1m<tag> | <directory>" , "\033[0m")
         all = []
@@ -316,7 +319,7 @@ if(__name__ == "__main__"):
             #print(tag , "|" , tag_des)
             #print(tag)
             all.append((tag , tag_dir))
-        ch = niceMenu.niceMenu.get_choice(all , toStrT , "<tag> | <directory>")
+        ch = niceMenu.niceMenu.get_choice(all , toStrT , "<tag>" , toPrvT , "<directory>")
         #sys.stdout.write(keyDirGlobal.CURSOR_UP_ONE)
         #sys.stdout.write(keyDirGlobal.ERASE_LINE)
         if(ch != None):
@@ -380,8 +383,11 @@ if(__name__ == "__main__"):
     # FILTER
 
     def toStrD(el):
-        return str(el[0]) + " | " + os.path.basename(el[1]) + " " + str(el[2])
+        return str(el[0]) + " | " + str(el[2])
 
+    def toPrvD(el):
+        return str(el[1])
+    
     if(args.filter != None):
         results = []
         fun = parseRPN(args.filter)
@@ -392,7 +398,7 @@ if(__name__ == "__main__"):
         #sel = results[-keyDirGlobal.maxPrint:]
         #ii = len(sel)
 #        print("\033[31;1m" , "<score> | <dir name> [<key words> ...]\033[0m")
-        choice = niceMenu.niceMenu.get_choice(results , toStrD , "<score> | <dir name> [<key words> ...]")
+        choice = niceMenu.niceMenu.get_choice(results , toStrD , "<score> | [<key words> ...]" , toPrvD , "<directory>")
         if(choice != None):
             with open(os.path.join(keyDirGlobal.script_dir , "kdSelection") , "w") as f:
                 f.write(choice[1])
