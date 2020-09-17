@@ -35,15 +35,15 @@ class niceMenu:
             n = 0
             for el in fragment:
                 if(n + n_begin == ch):
-                    sys.stdout.write("\033[7m" + toStr(el)[t_begin : t_end] + "\033[0m\n")
+                    sys.stdout.write("\033[7m" + toStr(el)[t_begin : t_end].replace("\n" , " ") + "\033[0m\n")
                 else:
-                    sys.stdout.write(toStr(el)[t_begin : t_end] + "\n")
+                    sys.stdout.write(toStr(el)[t_begin : t_end].replace("\n" , " ") + "\n")
                 n += 1
 
             if(toPrv != None):
                 if(bottom != None):
                     sys.stdout.write("\033[31;1m" + bottom + "\033[0m\n")
-                prv = toPrv(lst[ch])[t_begin : t_end] + "\n"
+                prv = toPrv(lst[ch])[t_begin : t_end].replace("\n" , " ") + "\n"
                 sys.stdout.write(prv + "\n")
 
 
