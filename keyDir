@@ -317,8 +317,8 @@ if(__name__ == "__main__"):
             #print(tag)
             all.append((tag , tag_dir))
         ch = niceMenu.niceMenu.get_choice(all , toStrT , "<tag> | <directory>")
-        sys.stdout.write(keyDirGlobal.CURSOR_UP_ONE)
-        sys.stdout.write(keyDirGlobal.ERASE_LINE)
+        #sys.stdout.write(keyDirGlobal.CURSOR_UP_ONE)
+        #sys.stdout.write(keyDirGlobal.ERASE_LINE)
         if(ch != None):
             with open(os.path.join(keyDirGlobal.script_dir , "kdSelection") , "w") as f1:
                 f1.write(ch[1].strip())
@@ -399,8 +399,8 @@ if(__name__ == "__main__"):
         else:
             with open(os.path.join(keyDirGlobal.script_dir , "kdSelection") , "w") as f:
                 f.write(os.getcwd())
-        sys.stdout.write(keyDirGlobal.CURSOR_UP_ONE)
-        sys.stdout.write(keyDirGlobal.ERASE_LINE)
+        #sys.stdout.write(keyDirGlobal.CURSOR_UP_ONE)
+        #sys.stdout.write(keyDirGlobal.ERASE_LINE)
         #for d in sel:
         #    print(ii , " | " , d[0] , os.path.basename(d[1]) , d[2])
         #    ii -= 1
