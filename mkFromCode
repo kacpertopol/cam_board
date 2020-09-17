@@ -106,7 +106,7 @@ if(__name__ == "__main__"):
                                 if(n_code_fragment > 0):
                                     labels.update({lb : labels[lb] + dot_dot_dot + "\n"})
                                 labelLines.update({lb : labelLines[lb] + [os.path.basename(in_file) + \
-                                        " @ " + str(ln + 1)]})
+                                        " line: " + str(ln + 1)]})
                                 n_begin = n_begin + 1
                                 n_code_fragment = n_code_fragment + 1
                             else:
