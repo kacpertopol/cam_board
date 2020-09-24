@@ -6,10 +6,14 @@ class niceMenu:
     ERASE_LINE = '\x1b[2K' 
     def get_choice(lst , toStr , top , toPrv = None , bottom = None):
         """
+        Creates a menu below the command line.
+
         Arguments:
             lst - list of choices
             toStr - called on elements of lst to get string representation
             top - top text for menu
+            toPrv - caled on elements of lst to get string representation of preview
+            bottom - string with title line for preview
         """
         term_size = shutil.get_terminal_size()
         term_columns = term_size.columns
@@ -102,5 +106,5 @@ class niceMenu:
             return None
 
 if(__name__ == "__main__"):
-    choice = niceMenu.get_choice([str(x) + " kjnkasjdnakjdnaksjdnaksjdnakjsdnakjsdnkajsdnakjdnkasjdnkasjdnkasjdnkasjndkajsndkasjndkajndkjasnsjlskdmalskdmalskdmaskldmaskldmkn" for x in range(100)] , lambda x : str(x) , 'N')
+    choice = niceMenu.get_choice(["--------- " + str(x) + " ---------" for x in range(100)] , lambda x : str(x) , 'N')
     print(choice)
