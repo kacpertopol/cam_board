@@ -1,0 +1,16 @@
+#!/bin/bash
+
+[ "$1" = "-h" ] && { echo "To select printer use -P<printer name> (no space). \nOther pptions passed to paps. \nSee man paps for more information."; paps -h; }
+[ "$1" = "--help" ] && { echo "To select printer use -P<printer name> (no space). \nOther options passed to paps. \nSee man paps for more information."; paps --help; }
+
+printercommand="lpr"
+
+papscommand="paps"
+
+for option in "$@"
+do
+	[ ${option:0:2} = "-P" ] && printercommand="lpr -P ${option:2}"
+	[ ${option:0:2} = "-P" ] || papscommand="$papscommand $option"
+done
+
+$papscommand | $printercommand
