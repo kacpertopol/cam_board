@@ -1,7 +1,7 @@
 #!/bin/bash
 
-[ "$1" = "-h" ] && { echo "To select printer use -P<printer name> (no space). \nOther pptions passed to paps. \nSee man paps for more information."; paps -h; }
-[ "$1" = "--help" ] && { echo "To select printer use -P<printer name> (no space). \nOther options passed to paps. \nSee man paps for more information."; paps --help; }
+[ "$1" = "-h" ] && { echo "To select printer use -P<printer name> (no space). \nOther pptions passed to paps. \nSee man paps for more information."; paps -h; exit 0; }
+[ "$1" = "--help" ] && { echo "To select printer use -P<printer name> (no space). \nOther options passed to paps. \nSee man paps for more information."; paps --help; exit 0; }
 
 printercommand="lpr"
 
