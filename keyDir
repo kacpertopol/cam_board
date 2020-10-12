@@ -6,6 +6,7 @@ import re
 import configparser
 import sys , tty , termios
 import subprocess
+import os.path
 
 import niceMenu
 
@@ -386,7 +387,15 @@ if(__name__ == "__main__"):
         return str(el[0]) + " | " + str(el[2])
 
     def toPrvD(el):
-        return str(el[1])
+        preview = str(el[1])
+        if(os.path.isfile(os.path.join(el[1] , "README"))):
+            with open(os.path.join(el[1] , "README") , "r") as f:
+                preview = f.read().strip().replace("\n" , "|")
+        if(os.path.isfile(os.path.join(el[1] , "README.md"))):
+            with open(os.path.join(el[1] , "README.md") , "r") as f:
+                preview = f.read().strip().replace("\n" , "|")
+        #return str(el[1])
+        return preview
     
     if(args.filter != None):
         results = []
