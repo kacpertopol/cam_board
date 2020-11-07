@@ -1,0 +1,17 @@
+[adaptiveThreshold]
+
+blockSize = 11
+C = 2
+
+[perspectiveMatrix]
+
+buffer = 20
+
+[qrsize]
+
+width = 45.5
+
+[writablesize]
+
+width = 200
+height = 112.5
