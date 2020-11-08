@@ -147,3 +147,8 @@ $ ./simplecal --help
 ## rssReader
 
 Small application to scan feeds. TODO
+
+## cam
+
+Presentations using webcam. More info
+in cam/README.md.
