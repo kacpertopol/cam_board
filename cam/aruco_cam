@@ -79,7 +79,6 @@ if(__name__ == "__main__"):
 
             gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
             corners, ids, rejectedImgPoints = cv2.aruco.detectMarkers(gray, aruco_dict, parameters=parameters)
-            #frame_markers = cv2.aruco.drawDetectedMarkers(frame.copy(), corners, ids)
             
             if(len(corners) == 4):
                 allids = [0 , 1 , 2 , 3]
@@ -102,10 +101,10 @@ if(__name__ == "__main__"):
 
             if(got_points and (not args.warp)):
 
-                warped = cv2.line(frame , pointsglob[0][0] , pointsglob[1][1] , (0 , 0 , 255))
-                warped = cv2.line(frame , pointsglob[1][1] , pointsglob[3][2] , (0 , 0 , 255))
-                warped = cv2.line(frame , pointsglob[3][2] , pointsglob[2][3] , (0 , 0 , 255))
-                warped = cv2.line(frame , pointsglob[2][0] , pointsglob[0][3] , (0 , 0 , 255))
+                #warped = cv2.line(frame , pointsglob[0][0] , pointsglob[1][1] , (0 , 0 , 255))
+                #warped = cv2.line(frame , pointsglob[1][1] , pointsglob[3][2] , (0 , 0 , 255))
+                #warped = cv2.line(frame , pointsglob[3][2] , pointsglob[2][3] , (0 , 0 , 255))
+                #warped = cv2.line(frame , pointsglob[2][0] , pointsglob[0][3] , (0 , 0 , 255))
                 
                 src = numpy.array([pointsglob[0][0] , pointsglob[1][1] , pointsglob[3][2] , pointsglob[2][3]] , numpy.float32)
                 dst = numpy.array([[frame.shape[1] , frame.shape[0]] , [0.0 , frame.shape[0]] , [0.0 , 0.0] , [frame.shape[1] , 0.0]] , numpy.float32)
@@ -123,8 +122,12 @@ if(__name__ == "__main__"):
 
             # Our operations on the frame come here
             if(args.denoise):
+                (b, g, r) = cv2.split(warped)
                 warped = cv2.cvtColor(warped , cv2.COLOR_BGR2GRAY)
-                warped = cv2.adaptiveThreshold(warped,255,cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY,blockSize,C)
+                ret , warped_b = cv2.threshold(b , 0 , 255 , cv2.THRESH_BINARY+cv2.THRESH_OTSU)
+                ret , warped_g = cv2.threshold(g , 0 , 255 , cv2.THRESH_BINARY+cv2.THRESH_OTSU)
+                ret , warped_r = cv2.threshold(r , 0 , 255 , cv2.THRESH_BINARY+cv2.THRESH_OTSU)
+                warped = cv2.merge((warped_b , warped_g , warped_r))
 
             tosave = warped
 

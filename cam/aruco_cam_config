@@ -1,6 +1,6 @@
 [adaptiveThreshold]
 
-blockSize = 11
+blockSize = 3
 C = 2
 
 [perspectiveMatrix]
