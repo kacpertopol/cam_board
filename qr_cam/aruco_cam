@@ -40,8 +40,6 @@ if(__name__ == "__main__"):
     blockSize = int(config["adaptiveThreshold"]["blockSize"])
     C = int(config["adaptiveThreshold"]["C"])
     buff = int(config["perspectiveMatrix"]["buffer"])
-    qrWidth = float(config["qrsize"]["width"])
-    writableWidth = float(config["writablesize"]["width"])
 
     # } reading configuration file
 
@@ -103,26 +101,9 @@ if(__name__ == "__main__"):
                     #print(corners)
                     got_points = True
                     pointsglob = pts
-                    #print(frame.shape , corners[0])
-                    #print(corners[0][0][0][0] , corners[0][0][0][1])
-                    #pointsglob = [
-                    # (int(corners[0][0][0][0]) , int(corners[0][0][0][1])) ,
-                    # (int(corners[1][0][0][0]) , int(corners[1][0][0][1])) ,
-                    # (int(corners[2][0][0][0]) , int(corners[2][0][0][1])) ,
-                    # (int(corners[3][0][0][0]) , int(corners[3][0][0][1])) 
-                    # ]
 
-                    #frame[int(corners[0][0][0][1]) , int(corners[0][0][0][0])] = (255 , 0 , 0)
-
-
-            # find QR code
-            #decodedText, points, something = qrCodeDetector.detectAndDecode(frame)
 
             warped = frame
-
-            #if(decodedText.strip() == "ULc"):
-            #    got_points = True
-            #    pointsglob = points
 
             print(frame.shape)
 
@@ -135,14 +116,8 @@ if(__name__ == "__main__"):
                 warped = cv2.line(frame , pointsglob[3][2] , pointsglob[2][3] , (0 , 0 , 255))
                 warped = cv2.line(frame , pointsglob[2][0] , pointsglob[0][3] , (0 , 0 , 255))
                 
-                #src = numpy.array([pointsglob[0][2] , pointsglob[0][3] , pointsglob[0][0] , pointsglob[0][1]] , numpy.float32)
                 src = numpy.array([pointsglob[0][0] , pointsglob[1][1] , pointsglob[3][2] , pointsglob[2][3]] , numpy.float32)
                 dst = numpy.array([[frame.shape[1] , frame.shape[0]] , [0.0 , frame.shape[0]] , [0.0 , 0.0] , [frame.shape[1] , 0.0]] , numpy.float32)
-                #mul = int(frame.shape[1] / writableWidth)
-                #if(args.out):
-                #    dst = mul * numpy.array([[0.0 , 0.0] , [-1.0 * qrWidth , 0.0] , [-1.0 * qrWidth , -1.0 * qrWidth] , [0.0 , -1.0 * qrWidth]] , numpy.float32)
-                #else:
-                #    dst = mul * numpy.array([[1.0 * qrWidth , 1.0 * qrWidth] , [0.0 , 1.0 * qrWidth] , [0.0 , 0.0] , [1.0 * qrWidth , 0.0]] , numpy.float32)
                 m = cv2.getPerspectiveTransform(src , dst)
                 m_list.append(m)
                 if(len(m_list) > buff):
@@ -156,14 +131,14 @@ if(__name__ == "__main__"):
 
 
             # Our operations on the frame come here
-            #if(args.denoise):
-            #    warped = cv2.cvtColor(warped , cv2.COLOR_BGR2GRAY)
-            #    warped = cv2.adaptiveThreshold(warped,255,cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY,blockSize,C)
+            if(args.denoise):
+                warped = cv2.cvtColor(warped , cv2.COLOR_BGR2GRAY)
+                warped = cv2.adaptiveThreshold(warped,255,cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY,blockSize,C)
 
             tosave = warped
 
-            #if(args.invert):
-            #    warped = cv2.bitwise_not(warped)
+            if(args.invert):
+                warped = cv2.bitwise_not(warped)
 
             # Display the resulting frame
             cv2.imshow('frame',warped)

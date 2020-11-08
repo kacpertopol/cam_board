@@ -6,12 +6,3 @@ C = 2
 [perspectiveMatrix]
 
 buffer = 20
-
-[qrsize]
-
-width = 46.0
-
-[writablesize]
-
-width = 278.0
-height = 112.5
