@@ -82,7 +82,6 @@ if(__name__ == "__main__"):
             #frame_markers = cv2.aruco.drawDetectedMarkers(frame.copy(), corners, ids)
             
             if(len(corners) == 4):
-                print(corners)
                 allids = [0 , 1 , 2 , 3]
                 pts = [None , None , None , None]
                 for i in range(4):
@@ -92,24 +91,16 @@ if(__name__ == "__main__"):
                             (int(corners[i][0][2][0]) , int(corners[i][0][2][1])) ,
                             (int(corners[i][0][3][0]) , int(corners[i][0][3][1]))
                             ];
-                    #print(ids[i])
-                #print('---')
 
                 ok = not None in pts
             
                 if(ok):
-                    #print(corners)
                     got_points = True
                     pointsglob = pts
 
-
             warped = frame
 
-            print(frame.shape)
-
             if(got_points and (not args.warp)):
-
-                print(pointsglob[0] , pointsglob[1])
 
                 warped = cv2.line(frame , pointsglob[0][0] , pointsglob[1][1] , (0 , 0 , 255))
                 warped = cv2.line(frame , pointsglob[1][1] , pointsglob[3][2] , (0 , 0 , 255))
