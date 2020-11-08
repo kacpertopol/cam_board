@@ -14,6 +14,8 @@ if(__name__ == "__main__"):
     parser.add_argument("--invert" , "-i" , action = "store_true" , help = "Invert colors.")
     parser.add_argument("--denoise" , "-d" , action = "store_true" , help = "Denoise.")
     parser.add_argument("--fullscreen" , "-f" , action = "store_true" , help = "Full screen.")
+    parser.add_argument("--warp" , "-w" , action = "store_true" , help = "Don't warp image to writable area.")
+    parser.add_argument("--out" , "-o" , action = "store_true" , help = "QR code outside of writable area.")
     parser.add_argument("--path" , "-p" , help = "Path to directory where frames will be saved. By default this is the current directory.")
     args = parser.parse_args() 
 
@@ -40,7 +42,6 @@ if(__name__ == "__main__"):
     buff = int(config["perspectiveMatrix"]["buffer"])
     qrWidth = float(config["qrsize"]["width"])
     writableWidth = float(config["writablesize"]["width"])
-    writableHeight = float(config["writablesize"]["height"])
 
     # } reading configuration file
 
@@ -84,11 +85,14 @@ if(__name__ == "__main__"):
                 got_points = True
                 pointsglob = points
 
-            if(got_points):
+            if(got_points and (not args.warp)):
                 
                 src = numpy.array([pointsglob[0][2] , pointsglob[0][3] , pointsglob[0][0] , pointsglob[0][1]] , numpy.float32)
                 mul = int(frame.shape[1] / writableWidth)
-                dst = mul * numpy.array([[0.0 , 0.0] , [-1.0 * qrWidth , 0.0] , [-1.0 * qrWidth , -45.5] , [0.0 , -1.0 * qrWidth]] , numpy.float32)
+                if(args.out):
+                    dst = mul * numpy.array([[0.0 , 0.0] , [-1.0 * qrWidth , 0.0] , [-1.0 * qrWidth , -1.0 * qrWidth] , [0.0 , -1.0 * qrWidth]] , numpy.float32)
+                else:
+                    dst = mul * numpy.array([[1.0 * qrWidth , 1.0 * qrWidth] , [0.0 , 1.0 * qrWidth] , [0.0 , 0.0] , [1.0 * qrWidth , 0.0]] , numpy.float32)
                 m = cv2.getPerspectiveTransform(src , dst)
                 m_list.append(m)
                 if(len(m_list) > buff):
@@ -105,13 +109,6 @@ if(__name__ == "__main__"):
             if(args.denoise):
                 warped = cv2.cvtColor(warped , cv2.COLOR_BGR2GRAY)
                 warped = cv2.adaptiveThreshold(warped,255,cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY,blockSize,C)
-                #warped_green = 255 - cv2.adaptiveThreshold(green,255,cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY,blockSize,C)
-                #warped_red = 255 - cv2.adaptiveThreshold(red,255,cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY,blockSize,C)
-                #warped_blue = cv2.bitwise_not(warped_blue)
-                #warped_green = cv2.bitwise_not(warped_green)
-                #warped_red = cv2.bitwise_not(warped_red)
-                #warped = cv2.merge((warped_blue , numpy.zeros(warped_blue.shape , dtype = warped_blue.dtype) , numpy.zeros(warped_blue.shape , dtype = warped_blue.dtype)))
-                #warped = cv2.merge((warped_blue , warped_green , warped_red))
 
             tosave = warped
 

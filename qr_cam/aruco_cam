@@ -1,0 +1,190 @@
+#!/usr/bin/env python
+
+import argparse
+import configparser
+import cv2
+import os
+import numpy
+
+if(__name__ == "__main__"):
+
+    # parsing command line arguments {
+
+    parser = argparse.ArgumentParser(description = "Filter web cam image to look like a white/black board. Hot keys: q (quit).")
+    parser.add_argument("--invert" , "-i" , action = "store_true" , help = "Invert colors.")
+    parser.add_argument("--denoise" , "-d" , action = "store_true" , help = "Denoise.")
+    parser.add_argument("--fullscreen" , "-f" , action = "store_true" , help = "Full screen.")
+    parser.add_argument("--warp" , "-w" , action = "store_true" , help = "Don't warp image to writable area.")
+    parser.add_argument("--out" , "-o" , action = "store_true" , help = "QR code outside of writable area.")
+    parser.add_argument("--path" , "-p" , help = "Path to directory where frames will be saved. By default this is the current directory.")
+    args = parser.parse_args() 
+
+    save_dir = os.getcwd()
+    if(args.path != None):
+        save_dir = args.path
+
+    # } parsing command line arguments
+
+
+    # script directory {
+
+    script_path = os.path.dirname(os.path.realpath(__file__))
+
+    # } script directory
+
+    # reading configuration file {
+
+    config = configparser.ConfigParser()
+    config.read(os.path.join(script_path , "aruco_cam_config"))
+   
+    blockSize = int(config["adaptiveThreshold"]["blockSize"])
+    C = int(config["adaptiveThreshold"]["C"])
+    buff = int(config["perspectiveMatrix"]["buffer"])
+    qrWidth = float(config["qrsize"]["width"])
+    writableWidth = float(config["writablesize"]["width"])
+
+    # } reading configuration file
+
+    # getting camera {
+    cap = cv2.VideoCapture(0)
+    # } getting camera 
+
+    # qr detector {
+    qrCodeDetector = cv2.QRCodeDetector()
+    # } qr detector
+
+    # window for cv {
+    cv2.namedWindow('frame' , cv2.WINDOW_NORMAL)
+    if(args.fullscreen):
+        cv2.setWindowProperty('frame' , cv2.WND_PROP_FULLSCREEN , cv2.WINDOW_FULLSCREEN)
+    # } window for cv
+
+    # main loop {
+
+    try:
+    
+        # points surrounfing the QR code available
+        got_points = False
+        # points surrounfing the QR code
+        pointsglob = None
+        # image number
+        image_number = 0
+
+        m_list = []
+
+        aruco_dict = cv2.aruco.Dictionary_get(cv2.aruco.DICT_4X4_250)
+        parameters =  cv2.aruco.DetectorParameters_create()
+
+        while(True):
+            # Capture frame-by-frame
+            ret, frame = cap.read()
+
+            gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+            corners, ids, rejectedImgPoints = cv2.aruco.detectMarkers(gray, aruco_dict, parameters=parameters)
+            #frame_markers = cv2.aruco.drawDetectedMarkers(frame.copy(), corners, ids)
+            
+            if(len(corners) == 4):
+                print(corners)
+                allids = [0 , 1 , 2 , 3]
+                pts = [None , None , None , None]
+                for i in range(4):
+                    pts[ids[i][0]] = [
+                            (int(corners[i][0][0][0]) , int(corners[i][0][0][1])) ,
+                            (int(corners[i][0][1][0]) , int(corners[i][0][1][1])) ,
+                            (int(corners[i][0][2][0]) , int(corners[i][0][2][1])) ,
+                            (int(corners[i][0][3][0]) , int(corners[i][0][3][1]))
+                            ];
+                    #print(ids[i])
+                #print('---')
+
+                ok = not None in pts
+            
+                if(ok):
+                    #print(corners)
+                    got_points = True
+                    pointsglob = pts
+                    #print(frame.shape , corners[0])
+                    #print(corners[0][0][0][0] , corners[0][0][0][1])
+                    #pointsglob = [
+                    # (int(corners[0][0][0][0]) , int(corners[0][0][0][1])) ,
+                    # (int(corners[1][0][0][0]) , int(corners[1][0][0][1])) ,
+                    # (int(corners[2][0][0][0]) , int(corners[2][0][0][1])) ,
+                    # (int(corners[3][0][0][0]) , int(corners[3][0][0][1])) 
+                    # ]
+
+                    #frame[int(corners[0][0][0][1]) , int(corners[0][0][0][0])] = (255 , 0 , 0)
+
+
+            # find QR code
+            #decodedText, points, something = qrCodeDetector.detectAndDecode(frame)
+
+            warped = frame
+
+            #if(decodedText.strip() == "ULc"):
+            #    got_points = True
+            #    pointsglob = points
+
+            print(frame.shape)
+
+            if(got_points and (not args.warp)):
+
+                print(pointsglob[0] , pointsglob[1])
+
+                warped = cv2.line(frame , pointsglob[0][0] , pointsglob[1][1] , (0 , 0 , 255))
+                warped = cv2.line(frame , pointsglob[1][1] , pointsglob[3][2] , (0 , 0 , 255))
+                warped = cv2.line(frame , pointsglob[3][2] , pointsglob[2][3] , (0 , 0 , 255))
+                warped = cv2.line(frame , pointsglob[2][0] , pointsglob[0][3] , (0 , 0 , 255))
+                
+                #src = numpy.array([pointsglob[0][2] , pointsglob[0][3] , pointsglob[0][0] , pointsglob[0][1]] , numpy.float32)
+                src = numpy.array([pointsglob[0][0] , pointsglob[1][1] , pointsglob[3][2] , pointsglob[2][3]] , numpy.float32)
+                dst = numpy.array([[frame.shape[1] , frame.shape[0]] , [0.0 , frame.shape[0]] , [0.0 , 0.0] , [frame.shape[1] , 0.0]] , numpy.float32)
+                #mul = int(frame.shape[1] / writableWidth)
+                #if(args.out):
+                #    dst = mul * numpy.array([[0.0 , 0.0] , [-1.0 * qrWidth , 0.0] , [-1.0 * qrWidth , -1.0 * qrWidth] , [0.0 , -1.0 * qrWidth]] , numpy.float32)
+                #else:
+                #    dst = mul * numpy.array([[1.0 * qrWidth , 1.0 * qrWidth] , [0.0 , 1.0 * qrWidth] , [0.0 , 0.0] , [1.0 * qrWidth , 0.0]] , numpy.float32)
+                m = cv2.getPerspectiveTransform(src , dst)
+                m_list.append(m)
+                if(len(m_list) > buff):
+                    m_list.pop(0)
+                m_avg = numpy.zeros(m.shape , dtype = m.dtype)
+                for mm in m_list:
+                    m_avg = m_avg + mm
+
+                m_avg = m_avg / float(len(m_list))
+                warped = cv2.warpPerspective(frame , m_avg , (frame.shape[1] , frame.shape[0]))
+
+
+            # Our operations on the frame come here
+            #if(args.denoise):
+            #    warped = cv2.cvtColor(warped , cv2.COLOR_BGR2GRAY)
+            #    warped = cv2.adaptiveThreshold(warped,255,cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY,blockSize,C)
+
+            tosave = warped
+
+            #if(args.invert):
+            #    warped = cv2.bitwise_not(warped)
+
+            # Display the resulting frame
+            cv2.imshow('frame',warped)
+
+            key = cv2.waitKey(1)
+ 
+            if(key == ord('q')):
+                break
+            elif(key == ord('s')):
+                #got_points = False
+                #pointsglob = None
+                cv2.imwrite(os.path.join(save_dir , str(image_number).zfill(4) + ".png") , tosave)
+                image_number += 1
+
+
+
+
+        # } main loop
+
+    finally:
+
+        cap.release()
+        cv2.destroyAllWindows()
+
