@@ -41,15 +41,23 @@ if(__name__ == "__main__"):
     C = int(config["adaptiveThreshold"]["C"])
     buff = int(config["perspectiveMatrix"]["buffer"])
 
+    #color_pallete = []
+    #for color in config["colors"]:
+    #    c = tuple(map(int , config["colors"][color].split(",")))
+    #    if(len(c) != 3):
+    #        raise ValueError("Invalid color syntax in cofiguration file.")
+    #    color_pallete.append(c)
+    #color_pallete = numpy.uint8(color_pallete)
+
+    frac = float(config["fraction"]["frac"])
+    threshold1_v = float(config["OTSU"]["threshold1"])
+    threshold2_v = float(config["OTSU"]["threshold2"])
+
     # } reading configuration file
 
     # getting camera {
     cap = cv2.VideoCapture(0)
     # } getting camera 
-
-    # qr detector {
-    qrCodeDetector = cv2.QRCodeDetector()
-    # } qr detector
 
     # window for cv {
     cv2.namedWindow('frame' , cv2.WINDOW_NORMAL)
@@ -122,25 +130,36 @@ if(__name__ == "__main__"):
 
             # Our operations on the frame come here
             if(args.denoise):
+                gray = cv2.cvtColor(warped , cv2.COLOR_BGR2GRAY)
+                #laplacian = cv2.Laplacian(gray,cv2.CV_64F)
+                #laplacian = cv2.bitwise_not(laplacian)
                 #war1 = cv2.cvtColor(warped , cv2.COLOR_BGR2GRAY)
+                #colors = frame.astype(numpy.float32)
+                #scalars = []
+                #for c in color_pallete:
+                #    scalars.append(numpy.linalg.norm(colors - numpy.float32(c)[numpy.newaxis , numpy.newaxis , :] , axis = 2))
+                #scalars = numpy.uint8(scalars)
+                #scalars = numpy.argmin(scalars , axis = 0).astype(numpy.uint8)
+                #warped = color_pallete[scalars] 
+                #print(scalars.shape , frame.shape)
                 (b, g, r) = cv2.split(warped)
                 war1_b = cv2.adaptiveThreshold(b,255,cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY,blockSize,C)
                 war1_g = cv2.adaptiveThreshold(g,255,cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY,blockSize,C)
                 war1_r = cv2.adaptiveThreshold(r,255,cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY,blockSize,C)
                 #war1 = cv2.merge((war1 , war1 , war1))
                 #war1 = cv2.Laplacian(warped, ksize=3, ddepth=cv2.CV_16S)
-                #war1 = cv2.Canny(warped, threshold1=40, threshold2=100)
-                #war1 = cv2.bitwise_not(war1)
-                ret , warped_b = cv2.threshold(b , 0 , 255 , cv2.THRESH_BINARY+cv2.THRESH_OTSU)
-                ret , warped_g = cv2.threshold(g , 0 , 255 , cv2.THRESH_BINARY+cv2.THRESH_OTSU)
-                ret , warped_r = cv2.threshold(r , 0 , 255 , cv2.THRESH_BINARY+cv2.THRESH_OTSU)
-                frac = 0.6
+                #canny = cv2.Canny(gray, threshold1=threshold1_v, threshold2=threshold2_v)
+                #canny = cv2.bitwise_not(canny)
+                ret , warped_b = cv2.threshold(b , threshold1_v , threshold2_v , cv2.THRESH_BINARY+cv2.THRESH_OTSU)
+                ret , warped_g = cv2.threshold(g , threshold1_v , threshold2_v , cv2.THRESH_BINARY+cv2.THRESH_OTSU)
+                ret , warped_r = cv2.threshold(r , threshold1_v , threshold2_v , cv2.THRESH_BINARY+cv2.THRESH_OTSU)
+                #frac = 0.6
                 #mean_b = numpy.maximum(frac * war1 , warped_b).astype(numpy.uint8)
                 #mean_g = numpy.maximum(frac * war1 , warped_g).astype(numpy.uint8)
                 #mean_r = numpy.maximum(frac * war1 , warped_r).astype(numpy.uint8)
-                mean_b = (frac * war1_b + (1.0 - frac) * warped_b).astype(numpy.uint8)
-                mean_g = (frac * war1_g + (1.0 - frac) * warped_g).astype(numpy.uint8)
-                mean_r = (frac * war1_r + (1.0 - frac) * warped_r).astype(numpy.uint8)
+                mean_b = (frac * warped_b + (1.0 - frac) * war1_b).astype(numpy.uint8)
+                mean_g = (frac * warped_g + (1.0 - frac) * war1_g).astype(numpy.uint8)
+                mean_r = (frac * warped_r + (1.0 - frac) * war1_b).astype(numpy.uint8)
                 #warped = cv2.merge((0.0 * war1 + 1.0 * warped_b , 0.0 * war1 + 1.0 * warped_g , 0.0 * war1 + 1.0 * warped_r))
                 warped = cv2.merge((mean_b , mean_g , mean_r))
                 #print(mean_b.dtype)

@@ -1,8 +1,39 @@
 [adaptiveThreshold]
 
-blockSize = 7
+# parameters for adaptiveThreshold
+# see cv2 documentation for details
+
+blockSize = 11
 C = 2
+
+[OTSU]
+
+# parameters for OTSU 
+# see cv2 documentation for details
+#
+threshold1 = 0
+threshold2 = 255
+
+[fraction]
+
+# fraction of OTSU in final image
+# value schould be between 0 and 1
+
+frac = 0.3
 
 [perspectiveMatrix]
 
+# buffer size for perspective matrix
+# the perspective transformation
+# will be calculated as the average
+# of buffer perspective matrices
+
 buffer = 20
+
+#[colors]
+#
+#white = 255,255,255
+#blue = 100 , 0 , 0
+#green = 0 , 100 , 0
+#red = 0 , 0 , 100
+#black = 0 , 0 , 0
