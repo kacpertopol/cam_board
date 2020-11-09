@@ -42,7 +42,7 @@ In the terminal navigate to the **cam_board** directory.
 ```
 - To run in black board mode:
 ```
-<USER> $ ./cam_board -i
+<USER> $ ./cam_board -di
 ```
 - To display command line options:
 ```
