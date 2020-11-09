@@ -10,7 +10,7 @@ C = 2
 
 # parameters for OTSU 
 # see cv2 documentation for details
-#
+
 threshold1 = 0
 threshold2 = 255
 
@@ -30,10 +30,4 @@ frac = 0.3
 
 buffer = 20
 
-#[colors]
-#
-#white = 255,255,255
-#blue = 100 , 0 , 0
-#green = 0 , 100 , 0
-#red = 0 , 0 , 100
-#black = 0 , 0 , 0
+

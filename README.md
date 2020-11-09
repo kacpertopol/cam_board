@@ -1,15 +1,19 @@
+# DESCRIPTION
+
+Point your laptop web cam at a piece of paper
+and the programm will streach the printable area
+over the whole screen.
+
+<center>
+[VIDEO DEMONSTRATION](./demo.mp4)
+</center>
+
+
 # USAGE
 
 ## Prepare paper
 
-Print 
-```
-to_print/a4.pdf
-```
-or
-```
-to_print/a4.svg
-```
+Print **to_print/a4.pdf** or **to_print/a4.svg**
 on A4 paper. The small circle markes
 the top left part of the page.
 If the aspect ration of your web cam is different
