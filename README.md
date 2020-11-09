@@ -1,169 +1,62 @@
-# useful_scripts
+# USAGE
 
-## mkFromCode
+## Prepare paper
 
-Generate markdown from source code files. 
-In conjunction with *pandoc* this is 
-a useful tool to create lecture notes
-and presentations.
-
-Examples of annotation are available in:
-
+Print 
 ```
-example.py
+to_print/a4.pdf
 ```
-
-To generate markdown from this file run:
-
-```bash
-$ ./mkFromCode -i example.py -o example.md
+or
 ```
-
-For more information run:
-
-```bash
-$ ./mkFromCode --help
+to_print/a4.svg
 ```
+on A4 paper. The small circle markes
+the top left part of the page.
+If the aspect ration of your web cam is different
+from 16:9 or you want to use paper with a different size
+see [setting up page with markers](#setuppage)
 
-### STATUS
+## Setup web cam 
 
-- very poorly tested
+Tilt your web cam so that all 4 ARUCO markers are in it's field of view.
 
-### TODO
+## Run cam_board
 
-- clean up code, esp loops and nested if elseif ...
-- pack reusable code to functions
+In the terminal navigate to the **cam_board** directory.
 
-## keyDir
-
-Simple file manager. Directories can be tagged
-and have keywords associated with them via a 
-hidden .hdKeys file. 
-Methods for filtering these directories using
-logical | and & operators will be added (TODO).
-Directory choice will be via fzf (TODO).
-
-Additional functions can be added to a .bashrc
-file from the output of:
-
-```bash
-$ ./keyDir --bashrc
+- To launch the script:
 ```
-For more information run:
-
-```bash
-$ ./keyDir --help
+<USER> $ ./cam_board 
+```
+- To run in full screen mode:
+```
+<USER> $ ./cam_board -f
+```
+- To run in full screen mode and white board mode:
+```
+<USER> $ ./cam_board -fd
+```
+- To run in black board mode:
+```
+<USER> $ ./cam_board -i
+```
+- To display command line options:
+```
+<USER> $ ./cam_board -h
 ```
 
-### STATUS
+## Adjust the configuration file
 
-- very poorly tested
+Edit **aruco_cam_config** to change settings. 
 
-### TODO
+# Custom page with markers {#setuppage}
 
-- clean up code
-- pack reusable code to functions
-- implement directory choice via fzf (letting go of this one)
+You can make your own marker page with the markers
+from **to_print/symbols**. They schould be placed
+in corners of a rectangle that matches the
+aspect ratio of your web cam. Carefull: the
+orientation of the symbols is important and
+they might require rotation - see **a4.svg**
+for refference.
 
-## xoj_present
 
-Turn files created using xournal or xournalpp into beamer style presentations.
-
-Example of turning notes into a presentation:
-
-```bash
-$ ./xoj_present notes.xopp presentation_from_notes.xopp simpleparse
-```
-
-Example of turning notes into a fancy presentation with sections and subsections (more documentation is needed):
-
-```bash
-$ ./xoj_present notes.xopp fancy_presentation_from_notes.xopp parse
-```
-
-More information (needs more documentation):
-
-```bash
-$ ./xoj_present --help
-```
-
-### STATUS
-
-- using an xml parser in python scrambles the order of key value pairs in <... key = value ...>
-  this causes xounnal (not sure if xournalpp) to crash, the xml files are reshuffled line by line.
-
-### TODO
-
-- add more documentation to --help 
-- clean up code
-
-## setWacom
-
-Maps a Wacom graphical tablet to a window and conserves the
-tablets aspect ratio.
-
-Additionally, you can rotate the tablet clockwise:
-
-```bash
-$ ./setWacom -c
-```
-
-or anti-clockwise:
-
-```bash
-$ ./setWacom -a
-```
-
-### STATUS
-
-- may not work on all systems
-- not tested extensively
-
-### TODO
-
-- clean up code
-- add dependency checks (*xsetwacom* and *xdotool*)
-- clean up code
-
-## simpleCal
-
-Simple calendar application. Uses a single text file
-from *simpleCal.config* to read calendar events.
-
-Examples and more information can be obtained using:
-
-```bash
-$ ./simplecal --help
-```
-
-### STATUS
-
-- not tested extensively
-
-### TODO
-
-- clean up code
-
-## rssReader
-
-Small application to scan feeds. TODO
-
-## cam
-
-Presentations using webcam. More info
-in cam/README.md.
-
-- print page with markers
-- tilt laptop webcam to see all markers on page
-- run
-
-```
-aruco_cam
-```
-
-More info:
-
-```
-aruco_cam -h
-```
-and cam/README.md.

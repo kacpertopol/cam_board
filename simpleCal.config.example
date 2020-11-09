@@ -1,4 +1,0 @@
-[paths]
-main_cal_file = <full path to the main calendar file>
-[computer]
-name = <this computer's name, no whitespaces>
