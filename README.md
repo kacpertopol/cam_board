@@ -51,6 +51,13 @@ In the terminal navigate to the **cam_board** directory.
 <USER> $ ./cam_board -h
 ```
 
+## Key bindings
+
+- "q" - quit
+- "s" - save screen to PNG files to create slide show
+  - the names are chosen automatically **0000.png**, **0001.png**, ...
+  - by default the files are saved in the current working directory
+
 ## Adjust the configuration file
 
 Edit **aruco_cam_config** to change settings. 
