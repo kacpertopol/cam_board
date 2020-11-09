@@ -84,12 +84,13 @@ if(__name__ == "__main__"):
                 allids = [0 , 1 , 2 , 3]
                 pts = [None , None , None , None]
                 for i in range(4):
-                    pts[ids[i][0]] = [
-                            (int(corners[i][0][0][0]) , int(corners[i][0][0][1])) ,
-                            (int(corners[i][0][1][0]) , int(corners[i][0][1][1])) ,
-                            (int(corners[i][0][2][0]) , int(corners[i][0][2][1])) ,
-                            (int(corners[i][0][3][0]) , int(corners[i][0][3][1]))
-                            ];
+                    if(ids[i][0] <= 3 and ids[i][0] >= 0):
+                        pts[ids[i][0]] = [
+                                (int(corners[i][0][0][0]) , int(corners[i][0][0][1])) ,
+                                (int(corners[i][0][1][0]) , int(corners[i][0][1][1])) ,
+                                (int(corners[i][0][2][0]) , int(corners[i][0][2][1])) ,
+                                (int(corners[i][0][3][0]) , int(corners[i][0][3][1]))
+                                ];
 
                 ok = not None in pts
             
