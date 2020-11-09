@@ -1,24 +1,28 @@
 # DESCRIPTION
 
 Point your laptop web cam at a piece of paper
-and the programm will streach the printable area
+and the program will stretch the printable area
 over the whole screen.
 
 <center>
 [VIDEO DEMONSTRATION](./demo.mp4)
 </center>
 
+# REQUIREMENTS
+
+- python 3
+- opencv
 
 # USAGE
 
 ## Prepare paper
 
 Print **to_print/a4.pdf** or **to_print/a4.svg**
-on A4 paper. The small circle markes
+on A4 paper. The small circle markers
 the top left part of the page.
 If the aspect ration of your web cam is different
 from 16:9 or you want to use paper with a different size
-see [setting up page with markers](#setuppage)
+see [setting up page with markers](#custom-page)
 
 ## Setup web cam 
 
@@ -53,14 +57,14 @@ In the terminal navigate to the **cam_board** directory.
 
 Edit **aruco_cam_config** to change settings. 
 
-# Custom page with markers {#setuppage}
+# Custom page
 
 You can make your own marker page with the markers
-from **to_print/symbols**. They schould be placed
+from **to_print/symbols**. They should be placed
 in corners of a rectangle that matches the
-aspect ratio of your web cam. Carefull: the
+aspect ratio of your web cam. Careful: the
 orientation of the symbols is important and
 they might require rotation - see **a4.svg**
-for refference.
+for reference.
 
 
