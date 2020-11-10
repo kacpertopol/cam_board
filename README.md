@@ -26,6 +26,11 @@ see [setting up page with markers](#custom-page)
 
 Tilt your web cam so that all 4 ARUCO markers are in it's field of view.
 
+**IMPORTANT**: To use the script with *Zoom*, *Skype*, *MS Teams*, ...
+Disable the camera in these programs first, before running the script.
+Otherwise a "camera busy" error will be thrown.
+
+
 ## Run cam_board
 
 In the terminal navigate to the **cam_board** directory.
