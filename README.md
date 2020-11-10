@@ -66,7 +66,7 @@ In the terminal navigate to the **cam_board** directory.
 
 Edit **aruco_cam_config** to change settings. 
 
-# Custom page
+## Custom page
 
 You can make your own marker page with the markers
 from **to_print/symbols**. They should be placed
