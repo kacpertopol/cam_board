@@ -16,9 +16,9 @@ over the whole screen.
 ## Prepare paper
 
 Print **to_print/a4.pdf** or **to_print/a4.svg**
-on A4 paper. The small circle markers
+on A4 paper. The small circle marks
 the top left part of the page.
-If the aspect ration of your web cam is different
+If the aspect ratio of your web cam is different
 from 16:9 or you want to use paper with a different size
 see [setting up page with markers](#custom-page)
 
@@ -37,6 +37,10 @@ In the terminal navigate to the **cam_board** directory.
 - To run in full screen mode:
 ```
 <USER> $ ./cam_board -f
+```
+- To run in full screen mode and invert colors:
+```
+<USER> $ ./cam_board -fi
 ```
 - To run in full screen mode and white board mode:
 ```
