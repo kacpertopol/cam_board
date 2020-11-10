@@ -78,5 +78,5 @@ for reference.
 
 # MISCELLANEOUS 
 
-- ArUco markers made using (this)[https://chev.me/arucogen/]
-- This is a simple script bodged togather from various opencv tutorials, (here)[https://docs.opencv.org/master/d9/df8/tutorial_root.html] is a good place to start
+- ArUco markers made using [this](https://chev.me/arucogen/)
+- This is a simple script bodged togather from various opencv tutorials, [here](https://docs.opencv.org/master/d9/df8/tutorial_root.html) is a good place to start
