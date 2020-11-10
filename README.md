@@ -1,7 +1,7 @@
 # DESCRIPTION
 
 Point your laptop web cam at a piece of paper
-and the program will stretch the printable area
+and the program will stretch the writable area
 over the whole screen.
 
 ![](demo.gif)
