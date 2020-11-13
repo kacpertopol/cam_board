@@ -9,7 +9,7 @@ over the whole screen.
 # REQUIREMENTS
 
 - python 3
-- opencv
+- opencv, numpy
 
 # USAGE
 
