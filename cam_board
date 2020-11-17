@@ -15,6 +15,7 @@ if(__name__ == "__main__"):
     parser.add_argument("--denoise" , "-d" , action = "store_true" , help = "Denoise.")
     parser.add_argument("--fullscreen" , "-f" , action = "store_true" , help = "Full screen.")
     parser.add_argument("--warp" , "-w" , action = "store_true" , help = "Don't warp image to writable area.")
+    parser.add_argument("--kernel" , "-k" , action = "store_true" , help = "Apply sharpening kernel to image.")
     parser.add_argument("--out" , "-o" , action = "store_true" , help = "QR code outside of writable area.")
     parser.add_argument("--path" , "-p" , help = "Path to directory where frames will be saved. By default this is the current directory.")
     args = parser.parse_args() 
@@ -130,6 +131,16 @@ if(__name__ == "__main__"):
                 mean_g = (frac * warped_g + (1.0 - frac) * war1_g).astype(numpy.uint8)
                 mean_r = (frac * warped_r + (1.0 - frac) * war1_b).astype(numpy.uint8)
                 warped = cv2.merge((mean_b , mean_g , mean_r))
+            
+            if(args.kernel):
+                kernel = numpy.array(
+                            [
+                                [ 0 , -1 ,  0] ,
+                                [-1 ,  6 , -1] ,
+                                [ 0 , -1 , 0 ]
+                            ]
+                        )
+                warped = cv2.filter2D(warped , -1 , kernel)
 
             tosave = warped
 

@@ -47,6 +47,10 @@ In the terminal navigate to the **cam_board** directory.
 ```
 <USER> $ ./cam_board -fi
 ```
+- To run in full screen mode, invert colors and apply sharpening kernel:
+```
+<USER> $ ./cam_board -fki
+```
 - To run in full screen mode and white board mode:
 ```
 <USER> $ ./cam_board -fd
@@ -85,3 +89,4 @@ for reference.
 
 - ArUco markers made using [this](https://chev.me/arucogen/)
 - This is a simple script bodged togather from various opencv tutorials, [here](https://docs.opencv.org/master/d9/df8/tutorial_root.html) is a good place to start
+- Sharpening [kernel](https://www.codingame.com/playgrounds/2524/basic-image-manipulation/filtering)
