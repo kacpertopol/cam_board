@@ -89,4 +89,4 @@ for reference.
 
 - ArUco markers made using [this](https://chev.me/arucogen/)
 - This is a simple script bodged togather from various opencv tutorials, [here](https://docs.opencv.org/master/d9/df8/tutorial_root.html) is a good place to start
-- Sharpening kernel see [this](https://www.codingame.com/playgrounds/2524/basic-image-manipulation/filtering)
+- Sharpening kernel see [wiki](https://en.wikipedia.org/wiki/Kernel_(image_processing)) and [this](https://www.codingame.com/playgrounds/2524/basic-image-manipulation/filtering)
