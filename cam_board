@@ -163,8 +163,6 @@ if(__name__ == "__main__"):
                 cv2.imwrite(os.path.join(save_dir , str(maxPng + 1).zfill(4) + ".png") , tosave)
 
 
-
-
         # } main loop
 
     finally:
