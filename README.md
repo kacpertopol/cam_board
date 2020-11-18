@@ -97,6 +97,7 @@ for reference.
 ## Better resolution at the bottom
 
 - laptop stands that allow tilting might help position the camera more perpendicular to the printout with markers resulting in better resolution
+  at the bottom of the printable area
 
 # MISCELLANEOUS 
 
