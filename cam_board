@@ -153,11 +153,9 @@ if(__name__ == "__main__"):
             if(key == ord('q')):
                 break
             elif(key == ord('s')):
-                #got_points = False
-                #pointsglob = None
                 maxPng = 0
                 for f in os.listdir(save_dir):
-                    if(f[-4:] == ".png"):
+                    if(f[-4:] == ".png" and f[:-4].isdigit() and len(f) == 8):
                         if(int(f[:-4]) > maxPng):
                             maxPng = int(f[:-4])
                 cv2.imwrite(os.path.join(save_dir , str(maxPng + 1).zfill(4) + ".png") , tosave)
