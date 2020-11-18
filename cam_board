@@ -66,8 +66,6 @@ if(__name__ == "__main__"):
         got_points = False
         # points surrounfing the QR code
         pointsglob = None
-        # image number
-        image_number = 0
 
         m_list = []
 
@@ -157,8 +155,12 @@ if(__name__ == "__main__"):
             elif(key == ord('s')):
                 #got_points = False
                 #pointsglob = None
-                cv2.imwrite(os.path.join(save_dir , str(image_number).zfill(4) + ".png") , tosave)
-                image_number += 1
+                maxPng = 0
+                for f in os.listdir(save_dir):
+                    if(f[-4:] == ".png"):
+                        if(int(f[:-4]) > maxPng):
+                            maxPng = int(f[:-4])
+                cv2.imwrite(os.path.join(save_dir , str(maxPng + 1).zfill(4) + ".png") , tosave)
 
 
 
