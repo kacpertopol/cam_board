@@ -85,6 +85,19 @@ orientation of the symbols is important and
 they might require rotation - see **a4.svg**
 for reference.
 
+## Conserve printer ink / toner
+
+- tape one printout with the 4 markers to desk surface (make sure the circle is positioned correctly and use tape that can later be removed from the desk 
+  surface without damaging it)
+- once the script recognizes the 4 ARUCO markers and stretches them to the whole screen 
+  place a blank sheet of paper over the taped printout
+- if the camera moves, remove any paper covering the printout and the program will recalculate
+  how to warp the camera image
+  
+## Better resolution at the bottom
+
+- laptop stands that allow tilting might help position the camera more perpendicular to the printout with markers resulting in better resolution
+
 # MISCELLANEOUS 
 
 - ArUco markers made using [this](https://chev.me/arucogen/)
