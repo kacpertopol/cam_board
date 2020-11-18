@@ -98,6 +98,7 @@ for reference.
 
 - laptop stands that allow tilting might help position the camera more perpendicular to the printout with markers resulting in better resolution
   at the bottom of the printable area
+- manipulating the position of the laptop might damage it, be careful :-)
 
 # MISCELLANEOUS 
 
