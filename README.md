@@ -68,7 +68,7 @@ In the terminal navigate to the **cam_board** directory.
 
 - "q" - quit
 - "s" - save screen to PNG files to create slide show
-  - the names are chosen automatically **0000.png**, **0001.png**, ...
+  - the names are chosen automatically **0001.png**, **0002.png**, ...
   - by default the files are saved in the current working directory
 
 ## Adjust the configuration file
