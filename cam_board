@@ -17,6 +17,7 @@ if(__name__ == "__main__"):
     parser.add_argument("--warp" , "-w" , action = "store_true" , help = "Don't warp image to writable area.")
     parser.add_argument("--kernel" , "-k" , action = "store_true" , help = "Apply sharpening kernel to image.")
     parser.add_argument("--out" , "-o" , action = "store_true" , help = "QR code outside of writable area.")
+    parser.add_argument("--camera" , "-c" , help = "Provide integer to change the camera number, by default this value is 0.")
     parser.add_argument("--path" , "-p" , help = "Path to directory where frames will be saved. By default this is the current directory.")
     args = parser.parse_args() 
 
@@ -49,7 +50,12 @@ if(__name__ == "__main__"):
     # } reading configuration file
 
     # getting camera {
-    cap = cv2.VideoCapture(0)
+    if(args.camera == None):
+        # by default uses the first camera
+        args.camera = 0
+    else:
+        args.camera = int(args.camera)
+    cap = cv2.VideoCapture(args.camera)
     # } getting camera 
 
     # window for cv {
