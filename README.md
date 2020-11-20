@@ -104,7 +104,7 @@ for reference.
 
 In some linux distributions python 3 is the default. If that is not the case on your system you can:
 - adjust the first, hashbang, line of *cam_board* or ...
-- run through python 3:
+- ... run through python 3:
 ```
 <user> $ python3 ./cam_board
 ```
