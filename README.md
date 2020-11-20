@@ -100,7 +100,7 @@ for reference.
   at the bottom of the printable area
 - manipulating the position of the laptop might damage it, be careful :-)
 
-# Python version error
+## Python version error
 
 In some linux distributions python 3 is the default. If that is not the case on your system you can:
 - adjust the first, hashbang, line of *cam_board* or ...
