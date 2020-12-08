@@ -47,6 +47,17 @@ if(__name__ == "__main__"):
     threshold1_v = float(config["OTSU"]["threshold1"])
     threshold2_v = float(config["OTSU"]["threshold2"])
 
+    levels = []
+
+    for c in config["levels"]:
+        levels.append(list(map(lambda x : float(x) , config["levels"][c].strip().split())))
+
+    k_pix = int(config["fragment"]["k_pix"])
+
+    blur_kernel = numpy.ones((k_pix , k_pix) , dtype = numpy.float32) 
+   
+    blur_kernel = blur_kernel / numpy.sum(blur_kernel.flatten())
+
     # } reading configuration file
 
     # getting camera {
@@ -63,6 +74,12 @@ if(__name__ == "__main__"):
     if(args.fullscreen):
         cv2.setWindowProperty('frame' , cv2.WND_PROP_FULLSCREEN , cv2.WINDOW_FULLSCREEN)
     # } window for cv
+
+    # for denoising {
+    ones = None
+    black = None
+    white = None
+    # } for denoising
 
     # main loop {
 
@@ -100,6 +117,9 @@ if(__name__ == "__main__"):
                 ok = not None in pts
             
                 if(ok):
+                    ones = numpy.ones(frame.shape[:2] , numpy.uint8)
+                    black = 0 * ones
+                    white = 255 * ones
                     got_points = True
                     pointsglob = pts
 
@@ -122,19 +142,26 @@ if(__name__ == "__main__"):
 
 
             # Our operations on the frame come here
-            if(args.denoise):
-                gray = cv2.cvtColor(warped , cv2.COLOR_BGR2GRAY)
-                (b, g, r) = cv2.split(warped)
-                war1_b = cv2.adaptiveThreshold(b,255,cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY,blockSize,C)
-                war1_g = cv2.adaptiveThreshold(g,255,cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY,blockSize,C)
-                war1_r = cv2.adaptiveThreshold(r,255,cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY,blockSize,C)
-                ret , warped_b = cv2.threshold(b , threshold1_v , threshold2_v , cv2.THRESH_BINARY+cv2.THRESH_OTSU)
-                ret , warped_g = cv2.threshold(g , threshold1_v , threshold2_v , cv2.THRESH_BINARY+cv2.THRESH_OTSU)
-                ret , warped_r = cv2.threshold(r , threshold1_v , threshold2_v , cv2.THRESH_BINARY+cv2.THRESH_OTSU)
-                mean_b = (frac * warped_b + (1.0 - frac) * war1_b).astype(numpy.uint8)
-                mean_g = (frac * warped_g + (1.0 - frac) * war1_g).astype(numpy.uint8)
-                mean_r = (frac * warped_r + (1.0 - frac) * war1_b).astype(numpy.uint8)
-                warped = cv2.merge((mean_b , mean_g , mean_r))
+            if(args.denoise and got_points):
+                gray = cv2.cvtColor(warped , cv2.COLOR_BGR2GRAY) 
+                gray = 255 - gray
+                gray = gray.astype("float32")
+
+                gray[0:3 , :] = 0.0
+                gray[gray.shape[0] - 3 : gray.shape[0] , :] = 0.0
+                gray[: , 0:3] = 0.0
+                gray[: , gray.shape[1] - 3 : gray.shape[1]] = 0.0
+
+                blured_gray = cv2.filter2D(gray , -1 , blur_kernel)
+                
+                stdv = numpy.sqrt(cv2.filter2D((gray - blured_gray) * (gray - blured_gray) , -1 , blur_kernel))
+
+                res = white
+                
+                for l in levels:
+                    res = numpy.where((gray - blured_gray) > l[0] * stdv , int(l[1]) * ones , res)
+               
+                warped = cv2.merge((res , res , res))
             
             if(args.kernel):
                 kernel = numpy.array(

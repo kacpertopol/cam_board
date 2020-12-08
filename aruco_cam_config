@@ -30,4 +30,26 @@ frac = 0.3
 
 buffer = 20
 
+[levels]
 
+# signal levels for denoising
+# eg. 1.2 means that signals above 1.2 * standard deviation
+# will be included in the denoised image,
+# the naming is irrevelant
+
+h = 0.6  255 
+g = 1.2  224  
+f = 1.8  192  
+e = 2.4  160  
+d = 3.0  128 
+c = 3.6  96  
+b = 4.2  64  
+a = 4.8  16  
+
+[fragment]
+
+# box kernel size
+# this is used in denoising to calculate mean
+# values
+
+k_pix = 500
