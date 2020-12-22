@@ -1,30 +1,11 @@
-[adaptiveThreshold]
-
-# parameters for adaptiveThreshold
-# see cv2 documentation for details
-
-blockSize = 11
-C = 2
-
-[OTSU]
-
-# parameters for OTSU 
-# see cv2 documentation for details
-
-threshold1 = 0
-threshold2 = 255
-
-[fraction]
-
-# fraction of OTSU in final image
-# value schould be between 0 and 1
-
-frac = 0.3
-
 [perspectiveMatrix]
 
 # buffer size for perspective matrix
+#
 # the perspective transformation
+# (the transformation that stretches
+# the four ARUCO markers to the 
+# corners of the window)
 # will be calculated as the average
 # of buffer perspective matrices
 
@@ -33,23 +14,45 @@ buffer = 20
 [levels]
 
 # signal levels for denoising
+#
 # eg. 1.2 means that signals above 1.2 * standard deviation
 # will be included in the denoised image,
 # the naming is irrevelant
 
-h = 0.6  255 
-g = 1.2  224  
-f = 1.8  192  
-e = 2.4  160  
-d = 3.0  128 
-c = 3.6  96  
-b = 4.2  64  
-a = 4.8  16  
+h = 1.0  128  
+g = 1.5  64  
+f = 2.0  32  
+e = 2.5  16  
+d = 3.0  8 
+c = 3.5  4  
+b = 4.0  2  
+a = 4.5  0  
+
+[levels1]
+
+# level for denoising with color
+#
+# eg. 0.8 means that signals above 0.8 * standard deviation
+# will be included in the denoised image,
+
+l_col = 1.0
 
 [fragment]
 
 # box kernel size
+#
 # this is used in denoising to calculate mean
 # values
 
-k_pix = 500
+k_pix = 300
+
+[smooth]
+
+# number of frames to buffer when smoothing image
+#
+# eg. 16 means that the current image will be calculated
+# as a moving average of 16 previous images
+
+f_buff = 16
+
+

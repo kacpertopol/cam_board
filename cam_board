@@ -13,10 +13,10 @@ if(__name__ == "__main__"):
     parser = argparse.ArgumentParser(description = "Filter web cam image to look like a white/black board. Hot keys: q (quit).")
     parser.add_argument("--invert" , "-i" , action = "store_true" , help = "Invert colors.")
     parser.add_argument("--denoise" , "-d" , action = "store_true" , help = "Denoise.")
+    parser.add_argument("--ldenoise" , "-l" , action = "store_true" , help = "Denoise with color.")
     parser.add_argument("--fullscreen" , "-f" , action = "store_true" , help = "Full screen.")
     parser.add_argument("--warp" , "-w" , action = "store_true" , help = "Don't warp image to writable area.")
     parser.add_argument("--kernel" , "-k" , action = "store_true" , help = "Apply sharpening kernel to image.")
-    parser.add_argument("--out" , "-o" , action = "store_true" , help = "QR code outside of writable area.")
     parser.add_argument("--camera" , "-c" , help = "Provide integer to change the camera number, by default this value is 0.")
     parser.add_argument("--path" , "-p" , help = "Path to directory where frames will be saved. By default this is the current directory.")
     args = parser.parse_args() 
@@ -26,7 +26,6 @@ if(__name__ == "__main__"):
         save_dir = args.path
 
     # } parsing command line arguments
-
 
     # script directory {
 
@@ -39,16 +38,10 @@ if(__name__ == "__main__"):
     config = configparser.ConfigParser()
     config.read(os.path.join(script_path , "aruco_cam_config"))
    
-    blockSize = int(config["adaptiveThreshold"]["blockSize"])
-    C = int(config["adaptiveThreshold"]["C"])
     buff = int(config["perspectiveMatrix"]["buffer"])
-
-    frac = float(config["fraction"]["frac"])
-    threshold1_v = float(config["OTSU"]["threshold1"])
-    threshold2_v = float(config["OTSU"]["threshold2"])
-
+    m_list = []
+    
     levels = []
-
     for c in config["levels"]:
         levels.append(list(map(lambda x : float(x) , config["levels"][c].strip().split())))
 
@@ -57,6 +50,11 @@ if(__name__ == "__main__"):
     blur_kernel = numpy.ones((k_pix , k_pix) , dtype = numpy.float32) 
    
     blur_kernel = blur_kernel / numpy.sum(blur_kernel.flatten())
+
+    f_buff = int(config["smooth"]["f_buff"])
+    frame_buff = []
+
+    l_col = float(config["levels1"]["l_col"])
 
     # } reading configuration file
 
@@ -70,7 +68,7 @@ if(__name__ == "__main__"):
     # } getting camera 
 
     # window for cv {
-    cv2.namedWindow('frame' , cv2.WINDOW_NORMAL)
+    cv2.namedWindow('frame' , cv2.WINDOW_GUI_NORMAL)
     if(args.fullscreen):
         cv2.setWindowProperty('frame' , cv2.WND_PROP_FULLSCREEN , cv2.WINDOW_FULLSCREEN)
     # } window for cv
@@ -81,6 +79,10 @@ if(__name__ == "__main__"):
     white = None
     # } for denoising
 
+    # for averaging {
+    avg = False
+    # }
+
     # main loop {
 
     try:
@@ -89,8 +91,6 @@ if(__name__ == "__main__"):
         got_points = False
         # points surrounfing the QR code
         pointsglob = None
-
-        m_list = []
 
         aruco_dict = cv2.aruco.Dictionary_get(cv2.aruco.DICT_4X4_250)
         parameters =  cv2.aruco.DetectorParameters_create()
@@ -142,7 +142,12 @@ if(__name__ == "__main__"):
 
 
             # Our operations on the frame come here
-            if(args.denoise and got_points):
+            if((args.denoise or args.ldenoise) and got_points):
+
+                hls = None
+                if(args.ldenoise):
+                    hls = cv2.cvtColor(warped , cv2.COLOR_BGR2HLS)
+
                 gray = cv2.cvtColor(warped , cv2.COLOR_BGR2GRAY) 
                 gray = 255 - gray
                 gray = gray.astype("float32")
@@ -154,14 +159,29 @@ if(__name__ == "__main__"):
 
                 blured_gray = cv2.filter2D(gray , -1 , blur_kernel)
                 
-                stdv = numpy.sqrt(cv2.filter2D((gray - blured_gray) * (gray - blured_gray) , -1 , blur_kernel))
+                stdv = numpy.sqrt(numpy.mean(((gray - blured_gray) * (gray - blured_gray)).flatten()))
 
-                res = white
-                
-                for l in levels:
-                    res = numpy.where((gray - blured_gray) > l[0] * stdv , int(l[1]) * ones , res)
-               
-                warped = cv2.merge((res , res , res))
+                if(not args.ldenoise):
+                    res = white
+
+                    for l in levels:
+                        res = numpy.where((gray - blured_gray) > l[0] * stdv , int(l[1]) * ones , res)
+
+                    warped = cv2.merge((res , res , res))
+                else:
+
+                    h_res = hls[: , : , 0]
+                    l_res = white.astype("float32")
+                    s_res = hls[: , : , 2]
+                    
+                    l = levels[0]
+                    
+                    l_res = numpy.where((gray - blured_gray) > l_col * stdv , hls[: , : , 1] , l_res)
+
+                    b_res = white.astype("float32")
+                    
+                    warped = cv2.cvtColor(cv2.merge((h_res.astype("uint8") , l_res.astype("uint8") , s_res.astype("uint8"))) , cv2.COLOR_HLS2BGR)
+
             
             if(args.kernel):
                 kernel = numpy.array(
@@ -178,6 +198,21 @@ if(__name__ == "__main__"):
             if(args.invert):
                 warped = cv2.bitwise_not(warped)
 
+            if(avg):
+                frame_buff.append(warped)
+                if(len(frame_buff) > f_buff):
+                    frame_buff.pop(0)
+               
+                smooth = numpy.zeros(warped.shape , numpy.float32)
+
+                for f in frame_buff:
+                    smooth = smooth + f
+
+                smooth = smooth / len(frame_buff)
+                smooth = smooth.astype(warped.dtype)
+                warped = smooth
+
+
             # Display the resulting frame
             cv2.imshow('frame',warped)
 
@@ -192,7 +227,19 @@ if(__name__ == "__main__"):
                         if(int(f[:-4]) > maxPng):
                             maxPng = int(f[:-4])
                 cv2.imwrite(os.path.join(save_dir , str(maxPng + 1).zfill(4) + ".png") , tosave)
-
+            elif(key == ord('a')):
+                avg = not avg
+                frame_buff = []
+            elif(key == ord('i')):
+                args.invert = not args.invert
+            elif(key == ord('d')):
+                args.denoise = not args.denoise
+            elif(key == ord('l')):
+                args.ldenoise = not args.ldenoise
+            elif(key == ord('w')):
+                args.warp = not args.warp
+            elif(key == ord('k')):
+                args.kernel = not args.kernel
 
         # } main loop
 
