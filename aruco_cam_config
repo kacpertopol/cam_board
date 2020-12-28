@@ -33,7 +33,7 @@ a = 4.5  0
 # level for denoising with color
 #
 # eg. 0.8 means that signals above 0.8 * standard deviation
-# will be included in the denoised image,
+# will be included in the denoised image
 
 l_col = 1.0
 

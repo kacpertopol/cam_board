@@ -10,7 +10,7 @@ if(__name__ == "__main__"):
 
     # parsing command line arguments {
 
-    parser = argparse.ArgumentParser(description = "Filter web cam image to look like a white/black board. Hot keys: q (quit).")
+    parser = argparse.ArgumentParser(description = "Filter web cam image to look like a white/black board.")
     parser.add_argument("--invert" , "-i" , action = "store_true" , help = "Invert colors.")
     parser.add_argument("--denoise" , "-d" , action = "store_true" , help = "Denoise.")
     parser.add_argument("--ldenoise" , "-l" , action = "store_true" , help = "Denoise with color.")
@@ -39,7 +39,6 @@ if(__name__ == "__main__"):
     config.read(os.path.join(script_path , "aruco_cam_config"))
    
     buff = int(config["perspectiveMatrix"]["buffer"])
-    m_list = []
     
     levels = []
     for c in config["levels"]:
@@ -47,12 +46,7 @@ if(__name__ == "__main__"):
 
     k_pix = int(config["fragment"]["k_pix"])
 
-    blur_kernel = numpy.ones((k_pix , k_pix) , dtype = numpy.float32) 
-   
-    blur_kernel = blur_kernel / numpy.sum(blur_kernel.flatten())
-
     f_buff = int(config["smooth"]["f_buff"])
-    frame_buff = []
 
     l_col = float(config["levels1"]["l_col"])
 
@@ -73,28 +67,38 @@ if(__name__ == "__main__"):
         cv2.setWindowProperty('frame' , cv2.WND_PROP_FULLSCREEN , cv2.WINDOW_FULLSCREEN)
     # } window for cv
 
-    # for denoising {
+    # global {
+
+    # for denoising 
     ones = None
     black = None
     white = None
-    # } for denoising
+    blur_kernel = numpy.ones((k_pix , k_pix) , dtype = numpy.float32) 
+    blur_kernel = blur_kernel / numpy.sum(blur_kernel.flatten())
 
-    # for averaging {
+    # list of perspecive matrixes
+    m_list = []
+
+    # list of frames for smoothing
+    frame_buff = []
     avg = False
-    # }
+
+    # points surrounfing the QR code available
+    got_points = False
+
+    # points surrounfing the QR code
+    pointsglob = None
+
+    # aruco markers
+    aruco_dict = cv2.aruco.Dictionary_get(cv2.aruco.DICT_4X4_250)
+    parameters =  cv2.aruco.DetectorParameters_create()
+
+    # } global
 
     # main loop {
 
     try:
     
-        # points surrounfing the QR code available
-        got_points = False
-        # points surrounfing the QR code
-        pointsglob = None
-
-        aruco_dict = cv2.aruco.Dictionary_get(cv2.aruco.DICT_4X4_250)
-        parameters =  cv2.aruco.DetectorParameters_create()
-
         while(True):
             # Capture frame-by-frame
             ret, frame = cap.read()
@@ -240,6 +244,13 @@ if(__name__ == "__main__"):
                 args.warp = not args.warp
             elif(key == ord('k')):
                 args.kernel = not args.kernel
+            elif(key == ord('f')):
+                args.fullscreen = not args.fullscreen
+                if(args.fullscreen):
+                    cv2.setWindowProperty('frame' , cv2.WND_PROP_FULLSCREEN , cv2.WINDOW_FULLSCREEN)
+                else:
+                    cv2.setWindowProperty('frame' , cv2.WND_PROP_FULLSCREEN , cv2.WINDOW_NORMAL)
+
 
         # } main loop
 

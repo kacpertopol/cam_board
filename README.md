@@ -15,12 +15,23 @@ over the whole screen.
 
 ## Prepare paper
 
-Print **to_print/a4.pdf** or **to_print/a4.svg**
-on A4 paper. The small circle marks
+For camera aspect ratio 16:9 print:
+- **to_print/a4_16_by_9.pdf** or **to_print/a4_16_by_9.svg**
+  on *A4* paper
+- **to_print/letter_16_by_9.pdf** or **to_print/letter_16_by_9.svg**
+  on *letter* paper
+
+For camera aspect ratio 4:3 print:
+- **to_print/a4_4_by_3.pdf** or **to_print/a4_4_by_3.svg**
+  on *A4* paper
+- **to_print/letter_4_by_3.pdf** or **to_print/letter_4_by_3.svg**
+  on *letter* paper
+
+The small circle marks
 the top left part of the page.
 If the aspect ratio of your web cam is different
 from 16:9 or you want to use paper with a different size
-see [setting up page with markers](#custom-page)
+see [custom page](#custom-page)
 
 ## Setup web cam 
 
@@ -30,7 +41,6 @@ Tilt your web cam so that all 4 ARUCO markers are in it's field of view.
 Disable the camera in these programs first, before running the script.
 Otherwise a "camera busy" error will be thrown.
 
-
 ## Run cam_board
 
 In the terminal navigate to the **cam_board** directory.
@@ -39,26 +49,7 @@ In the terminal navigate to the **cam_board** directory.
 ```
 <USER> $ ./cam_board 
 ```
-- To run in full screen mode:
-```
-<USER> $ ./cam_board -f
-```
-- To run in full screen mode and invert colors:
-```
-<USER> $ ./cam_board -fi
-```
-- To run in full screen mode, invert colors and apply sharpening kernel:
-```
-<USER> $ ./cam_board -fki
-```
-- To run in full screen mode and white board mode:
-```
-<USER> $ ./cam_board -fd
-```
-- To run in black board mode:
-```
-<USER> $ ./cam_board -di
-```
+
 - To display command line options:
 ```
 <USER> $ ./cam_board -h
@@ -70,6 +61,13 @@ In the terminal navigate to the **cam_board** directory.
 - "s" - save screen to PNG files to create slide show
   - the names are chosen automatically **0001.png**, **0002.png**, ...
   - by default the files are saved in the current working directory
+- "a" - smooth the image by calculating an average of recent frames on / off
+- "i" - invert image on / off
+- "d" - de-noise on / off
+- "l" - de-noise with colors on / off
+- "w" - warp camera image to ARUCO markers on / off
+- "k" - apply sharpening kernel on / off
+- "f" - full screen mode / windowed mode
 
 ## Adjust the configuration file
 
