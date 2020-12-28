@@ -69,7 +69,7 @@ $ ./cam_board -h
 
 ## Run cam_board_v4l2
 
-The difference between `cam_board_v4l2` and `cam_board` is that `cam_board_v4l2` broadcasts the result to a virtual camera, which can be usefull if the software you use can not 'share' individual windows. Note: this script does not create a GUI window, so command line arguments are the only way to pass the parameters.
+The difference between `cam_board_v4l2` and `cam_board` is that `cam_board_v4l2` broadcasts the result to a virtual camera, which can be useful if the software you use can not 'share' individual windows. Note: this script does not create a GUI window, so command line arguments are the only way to pass the parameters.
 
 - To launch the script:
 ```
