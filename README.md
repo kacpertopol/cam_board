@@ -6,6 +6,8 @@ over the whole screen.
 
 ![](demo.gif)
 
+Video demonstrating some of the new features available [here](https://youtu.be/zO3oriB2N70).
+
 # REQUIREMENTS
 
 - python 3
