@@ -12,6 +12,7 @@ over the whole screen.
 
 - python 3
 - opencv, numpy
+- v4l2loopback (optional)
 
 # USAGE
 
@@ -35,7 +36,7 @@ If the aspect ratio of your web cam is different
 from 16:9 or you want to use paper with a different size
 see [custom page](#custom-page)
 
-## Setup web cam 
+## Setup web cam
 
 Tilt your web cam so that all 4 ARUCO markers are in it's field of view.
 
@@ -43,18 +44,41 @@ Tilt your web cam so that all 4 ARUCO markers are in it's field of view.
 Disable the camera in these programs first, before running the script.
 Otherwise a "camera busy" error will be thrown.
 
+## Setup loopback camera (optional)
+
+This is needed if you want to broadcast the result directly to a virtual camera, which you can use in Zoom, Skype etc just like a normal camera, you need to set up a loopback device. 
+
+```
+sudo modprobe v4l2loopback
+```
+
 ## Run cam_board
 
 In the terminal navigate to the **cam_board** directory.
 
 - To launch the script:
 ```
-<USER> $ ./cam_board 
+$ ./cam_board 
 ```
 
 - To display command line options:
 ```
-<USER> $ ./cam_board -h
+$ ./cam_board -h
+```
+
+
+## Run cam_board_v4l2
+
+The difference between `cam_board_v4l2` and `cam_board` is that `cam_board_v4l2` broadcasts the result to a virtual camera, which can be usefull if the software you use can not 'share' individual windows. Note: this script does not create a GUI window, so command line arguments are the only way to pass the parameters.
+
+- To launch the script:
+```
+$ ./cam_board_v4l2
+```
+
+- To display command line options:
+```
+$ ./cam_board_v4l2 -h
 ```
 
 ## Key bindings
