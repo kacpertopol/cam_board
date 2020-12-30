@@ -11,7 +11,7 @@ over the whole screen.
 # REQUIREMENTS
 
 - python 3
-- opencv, numpy
+- opencv (with the `aruco` module), numpy
 - v4l2loopback (optional)
 
 # USAGE
