@@ -11,7 +11,7 @@ over the whole screen.
 # REQUIREMENTS
 
 - python 3
-- opencv (with the aruco module, see eg. the `opencv-contrib-python` pip package), numpy
+- opencv (with the `aruco` module), numpy
 
 # USAGE
 
