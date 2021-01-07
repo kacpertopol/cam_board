@@ -17,7 +17,7 @@ if(__name__ == "__main__"):
     parser.add_argument("--fullscreen" , "-f" , action = "store_true" , help = "Full screen.")
     parser.add_argument("--warp" , "-w" , action = "store_true" , help = "Don't warp image to writable area.")
     parser.add_argument("--kernel" , "-k" , action = "store_true" , help = "Apply sharpening kernel to image.")
-    parser.add_argument("--camera" , "-c" , help = "Provide integer to change the camera number, by default this value is 0.")
+    parser.add_argument("--camera" , "-c" , help = "Provide integer to change the v4l2 camera device number, by default this value is 0. Alternatively provide a fully qualified streaming webcam URL, e.g. http://<somecamera>/video/mjpeg")
     parser.add_argument("--path" , "-p" , help = "Path to directory where frames will be saved. By default this is the current directory.")
     args = parser.parse_args() 
 
@@ -56,10 +56,15 @@ if(__name__ == "__main__"):
     if(args.camera == None):
         # by default uses the first camera
         args.camera = 0
-    else:
-        args.camera = int(args.camera)
+    try:
+        if(not args.camera.startswith('http')):
+            args.camera = int(args.camera)
+    except TypeError as te:
+        print('Invalid --camera argument [',args.camera,']')
     cap = cv2.VideoCapture(args.camera)
-    # } getting camera 
+    if(not cap.isOpened()):
+        print ('Failed to open camera [',args.camera,']')
+    # } getting camera
 
     # window for cv {
     cv2.namedWindow('frame' , cv2.WINDOW_GUI_NORMAL)
