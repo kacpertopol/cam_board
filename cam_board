@@ -107,7 +107,6 @@ if(__name__ == "__main__"):
         while(True):
             # Capture frame-by-frame
             ret, frame = cap.read()
-#            frame = cv2.imread('/tmp/clipped_wb.png',1)
 
             gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
             corners, ids, rejectedImgPoints = cv2.aruco.detectMarkers(gray, aruco_dict, parameters=parameters)
