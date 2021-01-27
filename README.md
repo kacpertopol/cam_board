@@ -10,8 +10,13 @@ over the whole screen.
 
 # REQUIREMENTS
 
-- python 3
-- opencv (with the `aruco` module), numpy
+- python 3 (with `pip` installed). On Windows, make sure **Install Python to PATH** is *checked* while installing.
+
+Using the terminal or cmd, use:
+
+```<USER> $ pip3 install opencv-contrib-python numpy``` on Linux and
+
+```C:\path\to\cam_board\> pip install opencv-contrib-python numpy``` on Windows to install the needed modules.
 
 # USAGE
 
@@ -43,7 +48,7 @@ Tilt your web cam so that all 4 ARUCO markers are in it's field of view.
 Disable the camera in these programs first, before running the script.
 Otherwise a "camera busy" error will be thrown.
 
-## Run cam_board
+## Run cam_board on Linux
 
 In the terminal navigate to the **cam_board** directory.
 
@@ -55,6 +60,20 @@ In the terminal navigate to the **cam_board** directory.
 - To display command line options:
 ```
 <USER> $ ./cam_board -h
+```
+
+## Run cam_board on Windows
+
+- Open cmd and navigate to the **cam_board** directory.
+
+```
+C:\path\to\cam_board\> cam_board.py
+```
+
+- To display command line options:
+
+```
+C:\path\to\cam_board\> cam_board.py  -h
 ```
 
 ## Key bindings
