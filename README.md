@@ -54,12 +54,12 @@ In the terminal navigate to the **cam_board** directory.
 
 - To launch the script:
 ```
-<USER> $ ./cam_board 
+<USER> $ ./cam_board.py 
 ```
 
 - To display command line options:
 ```
-<USER> $ ./cam_board -h
+<USER> $ ./cam_board.py -h
 ```
 
 ## Run cam_board on Windows
