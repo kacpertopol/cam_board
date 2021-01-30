@@ -54,18 +54,19 @@ In the terminal navigate to the **cam_board** directory.
 
 - To launch the script:
 ```
-<USER> $ ./cam_board.py 
+<USER> $ python3 cam_board.py 
 ```
 
 - To display command line options:
 ```
-<USER> $ ./cam_board.py -h
+<USER> $ python3 cam_board.py -h
 ```
 
 ## Run cam_board on Windows
 
-- Open cmd and navigate to the **cam_board** directory.
+Open cmd and navigate to the **cam_board** directory.
 
+-To launch the script run:
 ```
 C:\path\to\cam_board\> cam_board.py
 ```
