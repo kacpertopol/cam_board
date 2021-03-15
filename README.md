@@ -24,7 +24,7 @@ For camera aspect ratio 16:9 print:
   on *A4* paper. Uses tiny markers, for high resolution cameras.
 - **to_print/a4_16_by_9_tiny.pdf** or **to_print/a4_16_by_9.svg**
   on *A4* paper. Uses tiny markers, for high resolution cameras.
-  The 16:9 ratio is inside the markers.
+  The 16:9 ratio is inside the markers (see the "r" key binding below).
 - **to_print/letter_16_by_9.pdf** or **to_print/letter_16_by_9.svg**
   on *letter* paper
 
