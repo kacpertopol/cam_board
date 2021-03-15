@@ -10,13 +10,19 @@ if(__name__ == "__main__"):
 
     # parsing command line arguments {
 
-    parser = argparse.ArgumentParser(description = "Filter web cam image to look like a white/black board.")
-    parser.add_argument("--invert" , "-i" , action = "store_true" , help = "Invert colors.")
-    parser.add_argument("--denoise" , "-d" , action = "store_true" , help = "Denoise.")
-    parser.add_argument("--ldenoise" , "-l" , action = "store_true" , help = "Denoise with color.")
-    parser.add_argument("--fullscreen" , "-f" , action = "store_true" , help = "Full screen.")
-    parser.add_argument("--warp" , "-w" , action = "store_true" , help = "Don't warp image to writable area.")
-    parser.add_argument("--kernel" , "-k" , action = "store_true" , help = "Apply sharpening kernel to image.")
+    parser = argparse.ArgumentParser(description = """
+Filter web cam image to look like a white/black board.
+Keyboard shortcuts are described below. Additional shortcuts:
+a (use average of recent frames to smooth out the motions in the video), p (pause), s (save frame, see --path),
+q (quit).
+""")
+    parser.add_argument("--invert" , "-i" , action = "store_true" , help = "Invert colors (keyboard shortcut i).")
+    parser.add_argument("--raruco" , "-r" , action = "store_true" , help = "Warp inside aruco markers to remove them (keyboard shortcut r).")
+    parser.add_argument("--denoise" , "-d" , action = "store_true" , help = "Denoise (keyboard shortcut d).")
+    parser.add_argument("--ldenoise" , "-l" , action = "store_true" , help = "Denoise with color (keyboard shortcut l).")
+    parser.add_argument("--fullscreen" , "-f" , action = "store_true" , help = "Full screen (keyboard shortcut f).")
+    parser.add_argument("--warp" , "-w" , action = "store_true" , help = "Don't warp image to writable area (keyboard shortcut w).")
+    parser.add_argument("--kernel" , "-k" , action = "store_true" , help = "Apply sharpening kernel to image (keyboard shortcut k).")
     parser.add_argument("--camera" , "-c" , help = "Provide integer to change the camera number, by default this value is 0.")
     parser.add_argument("--path" , "-p" , help = "Path to directory where frames will be saved. By default this is the current directory.")
     args = parser.parse_args() 
@@ -69,6 +75,11 @@ if(__name__ == "__main__"):
 
     # global {
 
+    # for freazing
+    freeze = False
+    ret = None
+    frame = None
+
     # for denoising 
     ones = None
     black = None
@@ -100,8 +111,9 @@ if(__name__ == "__main__"):
     try:
     
         while(True):
-            # Capture frame-by-frame
-            ret, frame = cap.read()
+            if(not freeze):
+                # Capture frame-by-frame
+                ret, frame = cap.read()
 
             gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
             corners, ids, rejectedImgPoints = cv2.aruco.detectMarkers(gray, aruco_dict, parameters=parameters)
@@ -131,7 +143,10 @@ if(__name__ == "__main__"):
 
             if(got_points and (not args.warp)):
 
-                src = numpy.array([pointsglob[0][0] , pointsglob[1][1] , pointsglob[3][2] , pointsglob[2][3]] , numpy.float32)
+                if(not args.raruco):
+                    src = numpy.array([pointsglob[0][0] , pointsglob[1][1] , pointsglob[3][2] , pointsglob[2][3]] , numpy.float32)
+                else:
+                    src = numpy.array([pointsglob[0][2] , pointsglob[1][3] , pointsglob[3][0] , pointsglob[2][1]] , numpy.float32)
                 dst = numpy.array([[frame.shape[1] , frame.shape[0]] , [0.0 , frame.shape[0]] , [0.0 , 0.0] , [frame.shape[1] , 0.0]] , numpy.float32)
                 m = cv2.getPerspectiveTransform(src , dst)
                 m_list.append(m)
@@ -240,10 +255,14 @@ if(__name__ == "__main__"):
                 args.denoise = not args.denoise
             elif(key == ord('l')):
                 args.ldenoise = not args.ldenoise
+            elif(key == ord('r')):
+                args.raruco = not args.raruco
             elif(key == ord('w')):
                 args.warp = not args.warp
             elif(key == ord('k')):
                 args.kernel = not args.kernel
+            elif(key == ord('p')):
+                freeze = not freeze
             elif(key == ord('f')):
                 args.fullscreen = not args.fullscreen
                 if(args.fullscreen):
