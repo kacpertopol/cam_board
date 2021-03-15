@@ -74,6 +74,8 @@ In the terminal navigate to the **cam_board** directory.
 - "l" - de-noise with colors on / off
 - "w" - warp camera image to ARUCO markers on / off
 - "k" - apply sharpening kernel on / off
+- "p" - freeze image on / off
+- "r" - warp the inside of the markers on / off
 - "f" - full screen mode / windowed mode
 
 ## Adjust the configuration file
