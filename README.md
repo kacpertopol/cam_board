@@ -12,6 +12,8 @@ over the whole screen.
 
 - python 3
 - opencv (with the `aruco` module), numpy
+- to use a streaming webcam URL as the camera source (see help for example), opencv must be compiled with ffmpeg or gstreamer support
+
 
 # USAGE
 
