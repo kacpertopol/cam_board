@@ -1,7 +1,7 @@
 # DESCRIPTION
 
-Point your laptop web cam at a piece of paper
-and the program will stretch the writable area
+Point your laptop web cam (or any streaming webcam) at a piece of paper
+(or an actual whiteboard) and the program will stretch the writable area
 over the whole screen.
 
 ![](demo.gif)
